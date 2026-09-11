@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+        content="Free kW, kVA, kVAR and power factor calculator. Calculate real power, apparent power, reactive power, power factor, and phase angle using the electrical power triangle.">
+
+    <title>kW to kVA Calculator – kVAR, Power Factor & Phase Angle | EE Tools</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .calculator-page {
+            background: #f7f9fc;
+            min-height: 100vh;
+        }
+
+        .calculator-hero {
+            padding: 80px 20px 50px;
+            text-align: center;
+        }
+
+        .calculator-label {
+            display: inline-block;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #2563eb;
+            margin-bottom: 15px;
+        }
+
+        .calculator-hero h1 {
+            font-size: clamp(36px, 5vw, 56px);
+            margin: 0 0 18px;
+        }
+
+        .calculator-hero p {
+            max-width: 720px;
+            margin: 0 auto;
+            font-size: 18px;
+            line-height: 1.7;
+            color: #64748b;
+        }
+
+        .calculator-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px 80px;
+        }
+
+        .calculator-box {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 15px 50px rgba(15, 23, 42, 0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .calculator-box h2 {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+        .calculator-box-intro {
+            color: #64748b;
+            margin-bottom: 30px;
+            line-height: 1.7;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1e293b;
+        }
+
+        .input-description {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: stretch;
+        }
+
+        .input-wrapper input {
+            flex: 1;
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px 0 0 10px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .unit {
+            min-width: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-left: none;
+            border-radius: 0 10px 10px 0;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .calc-button,
+        .reset-button {
+            border: none;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .calc-button {
+            background: #2563eb;
+            color: white;
+        }
+
+        .reset-button {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .calc-button:hover,
+        .reset-button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .error-message {
+            display: none;
+            margin-top: 15px;
+            padding: 12px 15px;
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .result-box {
+            margin-top: 30px;
+            padding: 25px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 14px;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-box h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #dbeafe;
+        }
+
+        .result-item span {
+            display: block;
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 7px;
+        }
+
+        .result-item strong {
+            font-size: 22px;
+            color: #0f172a;
+        }
+
+        .result-highlight {
+            margin-top: 20px;
+            padding: 20px;
+            background: #0f172a;
+            color: white;
+            border-radius: 12px;
+        }
+
+        .result-highlight span {
+            display: block;
+            color: #cbd5e1;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .result-highlight strong {
+            font-size: 30px;
+        }
+
+        .formula-box {
+            margin-top: 30px;
+            padding: 25px;
+            background: #0f172a;
+            color: white;
+            border-radius: 14px;
+        }
+
+        .formula-box h3 {
+            margin-top: 0;
+        }
+
+        .formula {
+            font-size: 21px;
+            font-weight: 700;
+            margin: 12px 0;
+        }
+
+        .formula-description {
+            color: #cbd5e1;
+            line-height: 1.7;
+        }
+
+        .info-section {
+            margin-top: 40px;
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .info-section h2 {
+            margin-top: 0;
+        }
+
+        .info-section p {
+            color: #475569;
+            line-height: 1.8;
+        }
+
+        .formula-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .formula-table th,
+        .formula-table td {
+            padding: 14px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .formula-table th {
+            background: #f8fafc;
+        }
+
+        @media (max-width: 700px) {
+
+            .calculator-box {
+                padding: 22px;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .calc-button,
+            .reset-button {
+                width: 100%;
+            }
+
+            .calculator-hero {
+                padding-top: 50px;
+            }
+
+        }
+    </style>
+
+</head>
+
+
+<body class="calculator-page">
+
+
+    <header class="header">
+
+        <div class="container nav-container">
+
+            <a href="../index.html" class="logo">
+                <span class="logo-icon">⚡</span>
+                <span>EE Tools</span>
+            </a>
+
+            <nav class="navigation">
+
+                <a href="../index.html#calculators">
+                    Calculators
+                </a>
+
+                <a href="../index.html#categories">
+                    Categories
+                </a>
+
+                <a href="../index.html#resources">
+                    Resources
+                </a>
+
+                <a href="../index.html#about">
+                    About
+                </a>
+
+            </nav>
+
+            <a href="../index.html#calculators" class="nav-button">
+                All Tools
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <main>
+
+
+        <section class="calculator-hero">
+
+            <div class="calculator-label">
+                POWER SYSTEMS
+            </div>
+
+            <h1>
+                kW ↔ kVA Calculator
+            </h1>
+
+            <p>
+                Calculate real power, apparent power, reactive power,
+                power factor, and phase angle using the electrical power triangle.
+            </p>
+
+        </section>
+
+
+        <section class="calculator-container">
+
+
+            <div class="calculator-box">
+
+
+                <h2>
+                    Enter known values
+                </h2>
+
+
+                <p class="calculator-box-intro">
+                    Enter any two compatible values below. You may also enter
+                    additional values, and the calculator will verify that they
+                    are mathematically consistent.
+                </p>
+
+
+                <div class="input-grid">
+
+
+                    <div class="input-group">
+
+                        <label for="kw">
+                            Real Power
+                        </label>
+
+                        <div class="input-description">
+                            Active or useful electrical power
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="kw" placeholder="Example: 100" step="any" min="0">
+
+                            <span class="unit">
+                                kW
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="kva">
+                            Apparent Power
+                        </label>
+
+                        <div class="input-description">
+                            Total apparent electrical power
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="kva" placeholder="Example: 125" step="any" min="0">
+
+                            <span class="unit">
+                                kVA
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="kvar">
+                            Reactive Power
+                        </label>
+
+                        <div class="input-description">
+                            Reactive-power magnitude
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="kvar" placeholder="Example: 75" step="any" min="0">
+
+                            <span class="unit">
+                                kVAR
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="pf">
+                            Power Factor
+                        </label>
+
+                        <div class="input-description">
+                            Decimal value from 0 to 1
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="pf" placeholder="Example: 0.80" step="0.01" min="0" max="1">
+
+                            <span class="unit">
+                                PF
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <div id="errorMessage" class="error-message" role="alert">
+                </div>
+
+
+                <div class="button-row">
+
+                    <button type="button" class="calc-button" onclick="calculatePowerTriangle()">
+
+                        Calculate
+
+                    </button>
+
+
+                    <button type="button" class="reset-button" onclick="resetCalculator()">
+
+                        Reset
+
+                    </button>
+
+                </div>
+
+
+                <div id="resultBox" class="result-box" aria-live="polite">
+
+                    <h3>
+                        Calculated Results
+                    </h3>
+
+
+                    <div class="results-grid">
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Real Power
+                            </span>
+
+                            <strong id="kwResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Apparent Power
+                            </span>
+
+                            <strong id="kvaResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Reactive Power
+                            </span>
+
+                            <strong id="kvarResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Power Factor
+                            </span>
+
+                            <strong id="pfResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Phase Angle
+                            </span>
+
+                            <strong id="angleResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="result-highlight">
+
+                        <span>
+                            Power Factor
+                        </span>
+
+                        <strong id="pfHighlight">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="formula-box">
+
+                    <h3>
+                        Power Triangle
+                    </h3>
+
+                    <div class="formula">
+                        kVA² = kW² + kVAR²
+                    </div>
+
+                    <div class="formula-description">
+                        Real power, reactive power, and apparent power form
+                        the electrical power triangle. Power factor is the ratio
+                        of real power to apparent power.
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    kW, kVA, kVAR and power factor
+                </h2>
+
+                <p>
+                    Real power represents the power doing useful work.
+                    Apparent power represents the combined magnitude of real
+                    and reactive power. Reactive power represents the magnitude
+                    of the reactive component of AC power.
+                </p>
+
+                <p>
+                    Power factor expresses the ratio between real power
+                    and apparent power.
+                </p>
+
+
+                <table class="formula-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Quantity
+                            </th>
+
+                            <th>
+                                Formula
+                            </th>
+
+                            <th>
+                                Unit
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        <tr>
+
+                            <td>
+                                Real Power
+                            </td>
+
+                            <td>
+                                kW = kVA × PF
+                            </td>
+
+                            <td>
+                                kW
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Apparent Power
+                            </td>
+
+                            <td>
+                                kVA = kW ÷ PF
+                            </td>
+
+                            <td>
+                                kVA
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Reactive Power
+                            </td>
+
+                            <td>
+                                kVAR = √(kVA² − kW²)
+                            </td>
+
+                            <td>
+                                kVAR
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Power Factor
+                            </td>
+
+                            <td>
+                                PF = kW ÷ kVA
+                            </td>
+
+                            <td>
+                                Unitless
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Phase Angle
+                            </td>
+
+                            <td>
+                                φ = cos⁻¹(PF)
+                            </td>
+
+                            <td>
+                                Degrees
+                            </td>
+
+                        </tr>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Example calculation
+                </h2>
+
+                <p>
+                    Suppose a system has 100 kW of real power and
+                    125 kVA of apparent power.
+                </p>
+
+                <p>
+                    The power factor is
+                    <strong>PF = 100 ÷ 125 = 0.800</strong>.
+                </p>
+
+                <p>
+                    The reactive power is
+                    <strong>kVAR = √(125² − 100²) = 75 kVAR</strong>.
+                </p>
+
+                <p>
+                    The corresponding phase-angle magnitude is approximately
+                    <strong>36.870°</strong>.
+                </p>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Why power factor matters
+                </h2>
+
+                <p>
+                    A lower power factor means more apparent power is required
+                    to deliver the same amount of real power. This can increase
+                    current and the required capacity of electrical conductors
+                    and equipment.
+                </p>
+
+                <p>
+                    In practical installations, power factor can be affected by
+                    inductive loads such as motors and transformers, as well as
+                    nonlinear loads and harmonics.
+                </p>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Important calculation note
+                </h2>
+
+                <p>
+                    This calculator treats kVAR and phase angle as magnitudes.
+                    It does not distinguish between leading and lagging reactive
+                    power because all entered quantities are treated as positive
+                    magnitudes.
+                </p>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Related calculators
+                </h2>
+
+                <p>
+                    You may also use the
+                    <a href="power-factor.html">Power Factor Calculator</a>,
+                    <a href="single-phase-power.html">Single-Phase Power Calculator</a>,
+                    or
+                    <a href="three-phase-power.html">Three-Phase Power Calculator</a>.
+                </p>
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+    <footer class="footer">
+
+        <div class="container footer-top">
+
+            <div>
+
+                <a href="../index.html" class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <span>EE Tools</span>
+                </a>
+
+                <p>
+                    Free electrical engineering calculators and resources.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="container footer-bottom">
+
+            <span>
+                © 2026 EE Tools. All rights reserved.
+            </span>
+
+            <span>
+                Built for electrical engineering.
+            </span>
+
+        </div>
+
+    </footer>
+
+
+    <script>
+
+
+        function formatNumber(number) {
+
+            if (!Number.isFinite(number)) {
+                return "—";
+            }
+
+            if (
+                Math.abs(number) >= 1000000 ||
+                (
+                    Math.abs(number) > 0 &&
+                    Math.abs(number) < 0.001
+                )
+            ) {
+
+                return number.toExponential(4);
+
+            }
+
+            return Number(
+                number.toFixed(3)
+            ).toLocaleString();
+
+        }
+
+
+        function approximatelyEqual(a, b) {
+
+            const tolerance = 0.001;
+
+            const scale = Math.max(
+                Math.abs(a),
+                Math.abs(b),
+                1
+            );
+
+            return Math.abs(a - b) <= tolerance * scale;
+
+        }
+
+
+        function showError(message) {
+
+            const errorMessage =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+            const resultBox =
+                document.getElementById(
+                    "resultBox"
+                );
+
+            resultBox.classList.remove(
+                "show"
+            );
+
+            errorMessage.textContent =
+                message;
+
+            errorMessage.classList.add(
+                "show"
+            );
+
+        }
+
+
+        function calculatePowerTriangle() {
+
+
+            const kwText =
+                document.getElementById(
+                    "kw"
+                ).value.trim();
+
+
+            const kvaText =
+                document.getElementById(
+                    "kva"
+                ).value.trim();
+
+
+            const kvarText =
+                document.getElementById(
+                    "kvar"
+                ).value.trim();
+
+
+            const pfText =
+                document.getElementById(
+                    "pf"
+                ).value.trim();
+
+
+            const entered = {
+
+                kw: kwText !== "",
+                kva: kvaText !== "",
+                kvar: kvarText !== "",
+                pf: pfText !== ""
+
+            };
+
+
+            const kw =
+                entered.kw
+                    ? Number(kwText)
+                    : NaN;
+
+
+            const kva =
+                entered.kva
+                    ? Number(kvaText)
+                    : NaN;
+
+
+            const kvar =
+                entered.kvar
+                    ? Number(kvarText)
+                    : NaN;
+
+
+            const pf =
+                entered.pf
+                    ? Number(pfText)
+                    : NaN;
+
+
+            const errorMessage =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+
+            const resultBox =
+                document.getElementById(
+                    "resultBox"
+                );
+
+
+            errorMessage.classList.remove(
+                "show"
+            );
+
+            errorMessage.textContent = "";
+
+            resultBox.classList.remove(
+                "show"
+            );
+
+
+            const knownValues =
+                Object.values(
+                    entered
+                ).filter(Boolean).length;
+
+
+            if (knownValues < 2) {
+
+                showError(
+                    "Please enter at least two compatible values."
+                );
+
+                return;
+
+            }
+
+
+            const values = [
+                { entered: entered.kw, value: kw, name: "real power" },
+                { entered: entered.kva, value: kva, name: "apparent power" },
+                { entered: entered.kvar, value: kvar, name: "reactive power" },
+                { entered: entered.pf, value: pf, name: "power factor" }
+            ];
+
+
+            for (const item of values) {
+
+                if (
+                    item.entered &&
+                    !Number.isFinite(item.value)
+                ) {
+
+                    showError(
+                        "Please enter valid numeric values."
+                    );
+
+                    return;
+
+                }
+
+            }
+
+
+            if (
+                (entered.kw && kw < 0) ||
+                (entered.kva && kva < 0) ||
+                (entered.kvar && kvar < 0)
+            ) {
+
+                showError(
+                    "Power values cannot be negative."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                entered.pf &&
+                (
+                    pf < 0 ||
+                    pf > 1
+                )
+            ) {
+
+                showError(
+                    "Power factor must be between 0 and 1."
+                );
+
+                return;
+
+            }
+
+
+            /*
+                Solve the power triangle from
+                one valid pair of entered values.
+            */
+
+
+            let calculatedKW;
+            let calculatedKVA;
+            let calculatedKVAR;
+            let calculatedPF;
+
+
+            /*
+                kW + kVA
+            */
+
+            if (
+                entered.kw &&
+                entered.kva
+            ) {
+
+                if (kva === 0) {
+
+                    if (kw !== 0) {
+
+                        showError(
+                            "Real power cannot be greater than zero when apparent power is zero."
+                        );
+
+                        return;
+
+                    }
+
+                    showError(
+                        "0 kW and 0 kVA do not uniquely determine power factor."
+                    );
+
+                    return;
+
+                }
+
+
+                if (kw > kva) {
+
+                    showError(
+                        "Real power cannot exceed apparent power."
+                    );
+
+                    return;
+
+                }
+
+
+                calculatedKW = kw;
+
+                calculatedKVA = kva;
+
+                calculatedPF =
+                    kw / kva;
+
+                calculatedKVAR =
+                    Math.sqrt(
+                        Math.max(
+                            0,
+                            (
+                                kva *
+                                kva
+                            ) -
+                            (
+                                kw *
+                                kw
+                            )
+                        )
+                    );
+
+            }
+
+
+            /*
+                kW + kVAR
+            */
+
+            else if (
+                entered.kw &&
+                entered.kvar
+            ) {
+
+                calculatedKW = kw;
+
+                calculatedKVAR = kvar;
+
+                calculatedKVA =
+                    Math.sqrt(
+                        (
+                            kw *
+                            kw
+                        ) +
+                        (
+                            kvar *
+                            kvar
+                        )
+                    );
+
+
+                if (calculatedKVA === 0) {
+
+                    showError(
+                        "0 kW and 0 kVAR do not uniquely determine power factor."
+                    );
+
+                    return;
+
+                }
+
+
+                calculatedPF =
+                    calculatedKW /
+                    calculatedKVA;
+
+            }
+
+
+            /*
+                kW + PF
+            */
+
+            else if (
+                entered.kw &&
+                entered.pf
+            ) {
+
+                if (pf === 0) {
+
+                    if (kw !== 0) {
+
+                        showError(
+                            "A nonzero real power cannot occur with a power factor of zero."
+                        );
+
+                        return;
+
+                    }
+
+                    showError(
+                        "0 kW and a power factor of 0 do not uniquely determine apparent or reactive power."
+                    );
+
+                    return;
+
+                }
+
+
+                calculatedKW = kw;
+
+                calculatedPF = pf;
+
+                calculatedKVA =
+                    kw / pf;
+
+                calculatedKVAR =
+                    calculatedKVA *
+                    Math.sqrt(
+                        Math.max(
+                            0,
+                            1 -
+                            (
+                                pf *
+                                pf
+                            )
+                        )
+                    );
+
+            }
+
+
+            /*
+                kVA + kVAR
+            */
+
+            else if (
+                entered.kva &&
+                entered.kvar
+            ) {
+
+                if (kvar > kva) {
+
+                    showError(
+                        "Reactive power magnitude cannot exceed apparent power."
+                    );
+
+                    return;
+
+                }
+
+
+                calculatedKVA = kva;
+
+                calculatedKVAR = kvar;
+
+                calculatedKW =
+                    Math.sqrt(
+                        Math.max(
+                            0,
+                            (
+                                kva *
+                                kva
+                            ) -
+                            (
+                                kvar *
+                                kvar
+                            )
+                        )
+                    );
+
+
+                if (calculatedKVA === 0) {
+
+                    showError(
+                        "0 kVA does not uniquely determine power factor."
+                    );
+
+                    return;
+
+                }
+
+
+                calculatedPF =
+                    calculatedKW /
+                    calculatedKVA;
+
+            }
+
+
+            /*
+                kVA + PF
+            */
+
+            else if (
+                entered.kva &&
+                entered.pf
+            ) {
+
+                if (kva === 0) {
+
+                    showError(
+                        "Zero apparent power does not uniquely determine a meaningful power triangle."
+                    );
+
+                    return;
+
+                }
+
+
+                calculatedKVA = kva;
+
+                calculatedPF = pf;
+
+                calculatedKW =
+                    kva *
+                    pf;
+
+                calculatedKVAR =
+                    kva *
+                    Math.sqrt(
+                        Math.max(
+                            0,
+                            1 -
+                            (
+                                pf *
+                                pf
+                            )
+                        )
+                    );
+
+            }
+
+
+            /*
+                kVAR + PF
+            */
+
+            else if (
+                entered.kvar &&
+                entered.pf
+            ) {
+
+                if (pf === 1) {
+
+                    if (kvar !== 0) {
+
+                        showError(
+                            "Reactive power must be zero when power factor is 1."
+                        );
+
+                        return;
+
+                    }
+
+                    showError(
+                        "0 kVAR and a power factor of 1 do not uniquely determine real or apparent power."
+                    );
+
+                    return;
+
+                }
+
+
+                if (pf === 0) {
+
+                    calculatedPF = 0;
+
+                    calculatedKW = 0;
+
+                    calculatedKVAR = kvar;
+
+                    calculatedKVA = kvar;
+
+                } else {
+
+                    const reactiveRatio =
+                        Math.sqrt(
+                            Math.max(
+                                0,
+                                1 -
+                                (
+                                    pf *
+                                    pf
+                                )
+                            )
+                        );
+
+
+                    if (reactiveRatio === 0) {
+
+                        showError(
+                            "The entered values do not produce a unique solution."
+                        );
+
+                        return;
+
+                    }
+
+
+                    calculatedPF = pf;
+
+                    calculatedKVAR = kvar;
+
+                    calculatedKVA =
+                        kvar /
+                        reactiveRatio;
+
+                    calculatedKW =
+                        calculatedKVA *
+                        pf;
+
+                }
+
+            }
+
+
+            if (
+                !Number.isFinite(calculatedKW) ||
+                !Number.isFinite(calculatedKVA) ||
+                !Number.isFinite(calculatedKVAR) ||
+                !Number.isFinite(calculatedPF)
+            ) {
+
+                showError(
+                    "The entered values do not produce a valid power-triangle solution."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                calculatedPF < 0 ||
+                calculatedPF > 1
+            ) {
+
+                showError(
+                    "The calculated power factor is outside the valid range of 0 to 1."
+                );
+
+                return;
+
+            }
+
+
+            /*
+                Validate every value supplied
+                by the user.
+            */
+
+
+            const inconsistent = [];
+
+
+            if (
+                entered.kw &&
+                !approximatelyEqual(
+                    kw,
+                    calculatedKW
+                )
+            ) {
+
+                inconsistent.push(
+                    "real power"
+                );
+
+            }
+
+
+            if (
+                entered.kva &&
+                !approximatelyEqual(
+                    kva,
+                    calculatedKVA
+                )
+            ) {
+
+                inconsistent.push(
+                    "apparent power"
+                );
+
+            }
+
+
+            if (
+                entered.kvar &&
+                !approximatelyEqual(
+                    kvar,
+                    calculatedKVAR
+                )
+            ) {
+
+                inconsistent.push(
+                    "reactive power"
+                );
+
+            }
+
+
+            if (
+                entered.pf &&
+                !approximatelyEqual(
+                    pf,
+                    calculatedPF
+                )
+            ) {
+
+                inconsistent.push(
+                    "power factor"
+                );
+
+            }
+
+
+            if (
+                inconsistent.length > 0
+            ) {
+
+                showError(
+                    "The entered values are inconsistent with the power triangle. Please check the " +
+                    inconsistent.join(", ") +
+                    "."
+                );
+
+                return;
+
+            }
+
+
+            const angle =
+                Math.acos(
+                    Math.min(
+                        1,
+                        Math.max(
+                            0,
+                            calculatedPF
+                        )
+                    )
+                ) *
+                (
+                    180 /
+                    Math.PI
+                );
+
+
+            document.getElementById(
+                "kwResult"
+            ).textContent =
+                formatNumber(
+                    calculatedKW
+                ) +
+                " kW";
+
+
+            document.getElementById(
+                "kvaResult"
+            ).textContent =
+                formatNumber(
+                    calculatedKVA
+                ) +
+                " kVA";
+
+
+            document.getElementById(
+                "kvarResult"
+            ).textContent =
+                formatNumber(
+                    calculatedKVAR
+                ) +
+                " kVAR";
+
+
+            document.getElementById(
+                "pfResult"
+            ).textContent =
+                formatNumber(
+                    calculatedPF
+                );
+
+
+            document.getElementById(
+                "angleResult"
+            ).textContent =
+                formatNumber(
+                    angle
+                ) +
+                "°";
+
+
+            document.getElementById(
+                "pfHighlight"
+            ).textContent =
+                formatNumber(
+                    calculatedPF
+                );
+
+
+            resultBox.classList.add(
+                "show"
+            );
+
+        }
+
+
+        function resetCalculator() {
+
+
+            document.getElementById(
+                "kw"
+            ).value = "";
+
+
+            document.getElementById(
+                "kva"
+            ).value = "";
+
+
+            document.getElementById(
+                "kvar"
+            ).value = "";
+
+
+            document.getElementById(
+                "pf"
+            ).value = "";
+
+
+            document.getElementById(
+                "resultBox"
+            ).classList.remove(
+                "show"
+            );
+
+
+            const errorMessage =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+
+            errorMessage.classList.remove(
+                "show"
+            );
+
+            errorMessage.textContent = "";
+
+        }
+
+
+    </script>
+
+
+</body>
+
+</html>

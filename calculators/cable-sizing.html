@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+        content="Free electrical cable sizing calculator. Estimate copper or aluminum conductor size from load current, voltage, circuit length, and allowable voltage drop using a simplified ampacity screening table.">
+
+    <title>Cable Sizing Calculator – AWG, Ampacity & Voltage Drop | EE Tools</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .calculator-page {
+            background: #f7f9fc;
+            min-height: 100vh;
+        }
+
+        .calculator-hero {
+            padding: 80px 20px 50px;
+            text-align: center;
+        }
+
+        .calculator-label {
+            display: inline-block;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #2563eb;
+            margin-bottom: 15px;
+        }
+
+        .calculator-hero h1 {
+            font-size: clamp(36px, 5vw, 56px);
+            margin: 0 0 18px;
+        }
+
+        .calculator-hero p {
+            max-width: 720px;
+            margin: 0 auto;
+            font-size: 18px;
+            line-height: 1.7;
+            color: #64748b;
+        }
+
+        .calculator-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px 80px;
+        }
+
+        .calculator-box {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 15px 50px rgba(15, 23, 42, 0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .calculator-box h2 {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+        .calculator-box-intro {
+            color: #64748b;
+            margin-bottom: 30px;
+            line-height: 1.7;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1e293b;
+        }
+
+        .input-description {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: stretch;
+        }
+
+        .input-wrapper input,
+        .input-wrapper select {
+            flex: 1;
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px 0 0 10px;
+            font-size: 16px;
+            outline: none;
+            background: white;
+            color: #0f172a;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-wrapper select {
+            cursor: pointer;
+        }
+
+        .input-wrapper input:focus,
+        .input-wrapper select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .unit {
+            min-width: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-left: none;
+            border-radius: 0 10px 10px 0;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .calc-button,
+        .reset-button {
+            border: none;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .calc-button {
+            background: #2563eb;
+            color: white;
+        }
+
+        .reset-button {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .calc-button:hover,
+        .reset-button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .error-message {
+            display: none;
+            margin-top: 15px;
+            padding: 12px 15px;
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .result-box {
+            margin-top: 30px;
+            padding: 25px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 14px;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-box h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #dbeafe;
+        }
+
+        .result-item span {
+            display: block;
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 7px;
+        }
+
+        .result-item strong {
+            font-size: 22px;
+            color: #0f172a;
+        }
+
+        .result-highlight {
+            margin-top: 20px;
+            padding: 20px;
+            background: #0f172a;
+            color: white;
+            border-radius: 12px;
+        }
+
+        .result-highlight span {
+            display: block;
+            color: #cbd5e1;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .result-highlight strong {
+            font-size: 30px;
+        }
+
+        .result-highlight p {
+            color: #cbd5e1;
+            margin: 10px 0 0;
+            line-height: 1.7;
+        }
+
+        .formula-box {
+            margin-top: 30px;
+            padding: 25px;
+            background: #0f172a;
+            color: white;
+            border-radius: 14px;
+        }
+
+        .formula-box h3 {
+            margin-top: 0;
+        }
+
+        .formula {
+            font-size: 21px;
+            font-weight: 700;
+            margin: 12px 0;
+        }
+
+        .formula-description {
+            color: #cbd5e1;
+            line-height: 1.7;
+        }
+
+        .info-section {
+            margin-top: 40px;
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .info-section h2 {
+            margin-top: 0;
+        }
+
+        .info-section p {
+            color: #475569;
+            line-height: 1.8;
+        }
+
+        .formula-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .formula-table th,
+        .formula-table td {
+            padding: 14px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .formula-table th {
+            background: #f8fafc;
+        }
+
+        @media (max-width: 700px) {
+
+            .calculator-box {
+                padding: 22px;
+            }
+
+            .input-grid,
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .calc-button,
+            .reset-button {
+                width: 100%;
+            }
+
+            .calculator-hero {
+                padding-top: 50px;
+            }
+
+        }
+    </style>
+
+</head>
+
+
+<body class="calculator-page">
+
+
+    <header class="header">
+
+        <div class="container nav-container">
+
+            <a href="../index.html" class="logo">
+                <span class="logo-icon">⚡</span>
+                <span>EE Tools</span>
+            </a>
+
+            <nav class="navigation">
+
+                <a href="../index.html#calculators">
+                    Calculators
+                </a>
+
+                <a href="../index.html#categories">
+                    Categories
+                </a>
+
+                <a href="../index.html#resources">
+                    Resources
+                </a>
+
+                <a href="../index.html#about">
+                    About
+                </a>
+
+            </nav>
+
+            <a href="../index.html#calculators" class="nav-button">
+                All Tools
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <main>
+
+
+        <section class="calculator-hero">
+
+            <div class="calculator-label">
+                ELECTRICAL DESIGN
+            </div>
+
+            <h1>
+                Cable Sizing Calculator
+            </h1>
+
+            <p>
+                Estimate copper or aluminum conductor size using
+                load current, circuit voltage, conductor length,
+                and allowable voltage drop.
+            </p>
+
+        </section>
+
+
+        <section class="calculator-container">
+
+
+            <div class="calculator-box">
+
+
+                <h2>
+                    Enter circuit information
+                </h2>
+
+
+                <p class="calculator-box-intro">
+                    The calculator checks each conductor against a simplified
+                    built-in ampacity screening value and the selected voltage-drop
+                    limit, then returns the smallest size that satisfies both.
+                </p>
+
+
+                <div class="input-grid">
+
+
+                    <div class="input-group">
+
+                        <label for="phase">
+                            Circuit Type
+                        </label>
+
+                        <div class="input-description">
+                            Select single-phase or three-phase
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <select id="phase">
+
+                                <option value="single" selected>
+                                    Single Phase
+                                </option>
+
+                                <option value="three">
+                                    Three Phase
+                                </option>
+
+                            </select>
+
+                            <span class="unit">
+                                AC
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="material">
+                            Conductor Material
+                        </label>
+
+                        <div class="input-description">
+                            Select copper or aluminum
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <select id="material">
+
+                                <option value="copper" selected>
+                                    Copper
+                                </option>
+
+                                <option value="aluminum">
+                                    Aluminum
+                                </option>
+
+                            </select>
+
+                            <span class="unit">
+                                Metal
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="voltage">
+                            Source Voltage
+                        </label>
+
+                        <div class="input-description">
+                            Nominal circuit voltage
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="voltage" placeholder="Example: 240" min="0" step="any">
+
+                            <span class="unit">
+                                V
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="current">
+                            Design Load Current
+                        </label>
+
+                        <div class="input-description">
+                            Current to be used for conductor sizing
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="current" placeholder="Example: 40" min="0" step="any">
+
+                            <span class="unit">
+                                A
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="length">
+                            One-Way Conductor Length
+                        </label>
+
+                        <div class="input-description">
+                            Distance from source to load
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="length" placeholder="Example: 100" min="0" step="any">
+
+                            <span class="unit">
+                                ft
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="maxDrop">
+                            Maximum Voltage Drop
+                        </label>
+
+                        <div class="input-description">
+                            Maximum desired voltage-drop percentage
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="maxDrop" value="3" min="0.1" max="20" step="any">
+
+                            <span class="unit">
+                                %
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <div id="errorMessage" class="error-message" role="alert">
+                </div>
+
+
+                <div class="button-row">
+
+                    <button type="button" class="calc-button" onclick="calculateCableSize()">
+
+                        Calculate
+
+                    </button>
+
+
+                    <button type="button" class="reset-button" onclick="resetCalculator()">
+
+                        Reset
+
+                    </button>
+
+                </div>
+
+
+                <div id="resultBox" class="result-box" aria-live="polite">
+
+                    <h3>
+                        Calculated Results
+                    </h3>
+
+
+                    <div class="results-grid">
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Estimated Conductor Size
+                            </span>
+
+                            <strong id="sizeResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Built-In Ampacity Screen
+                            </span>
+
+                            <strong id="ampacityResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Estimated Voltage Drop
+                            </span>
+
+                            <strong id="voltageDropResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Voltage Drop Percentage
+                            </span>
+
+                            <strong id="dropPercentResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Estimated Load Voltage
+                            </span>
+
+                            <strong id="loadVoltageResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Circular-Mil Area
+                            </span>
+
+                            <strong id="cmResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Conductor Material
+                            </span>
+
+                            <strong id="materialResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Circuit Type
+                            </span>
+
+                            <strong id="phaseResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Sizing Driver
+                            </span>
+
+                            <strong id="sizingDriverResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="result-highlight">
+
+                        <span>
+                            Estimated Cable Size
+                        </span>
+
+                        <strong id="sizeHighlight">
+                            —
+                        </strong>
+
+                        <p id="resultDescription">
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="formula-box">
+
+                    <h3>
+                        Cable Sizing Method
+                    </h3>
+
+
+                    <div class="formula">
+                        Single Phase VD = (2 × K × I × L) ÷ CM
+                    </div>
+
+
+                    <div class="formula">
+                        Three Phase VD = (√3 × K × I × L) ÷ CM
+                    </div>
+
+
+                    <div class="formula">
+                        VD% = (VD ÷ V) × 100
+                    </div>
+
+
+                    <div class="formula-description">
+                        K = 12.9 for copper and 21.2 for aluminum in this
+                        simplified voltage-drop model. The selected conductor
+                        must also meet the calculator's built-in ampacity
+                        screening value.
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    How this cable sizing calculator works
+                </h2>
+
+                <p>
+                    Conductor sizing involves more than selecting a wire
+                    that can carry the expected current. Long circuit runs
+                    may require a larger conductor because of voltage drop.
+                </p>
+
+                <p>
+                    This calculator checks the available conductor sizes
+                    from smallest to largest. Each conductor must pass both
+                    the built-in ampacity screen and the selected voltage-drop
+                    limit before it can be returned.
+                </p>
+
+                <p>
+                    The result should be treated as a preliminary engineering
+                    estimate rather than a final conductor specification.
+                </p>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Voltage drop formulas
+                </h2>
+
+
+                <table class="formula-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Circuit
+                            </th>
+
+                            <th>
+                                Formula
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        <tr>
+
+                            <td>
+                                Single Phase
+                            </td>
+
+                            <td>
+                                VD = (2 × K × I × L) ÷ CM
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Three Phase
+                            </td>
+
+                            <td>
+                                VD = (√3 × K × I × L) ÷ CM
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Voltage Drop %
+                            </td>
+
+                            <td>
+                                VD% = (VD ÷ Source Voltage) × 100
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Estimated Load Voltage
+                            </td>
+
+                            <td>
+                                Vload = Vsource − VD
+                            </td>
+
+                        </tr>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Example calculation
+                </h2>
+
+                <p>
+                    Consider a <strong>240 V single-phase</strong>
+                    circuit carrying <strong>40 A</strong> through a
+                    <strong>100 ft</strong> one-way copper conductor run,
+                    with a maximum desired voltage drop of
+                    <strong>3%</strong>.
+                </p>
+
+                <p>
+                    A 10 AWG conductor does not pass this calculator's
+                    built-in 40 A ampacity screen.
+                </p>
+
+                <p>
+                    The next size, <strong>8 AWG copper</strong>,
+                    has a built-in screening ampacity of
+                    <strong>50 A</strong>.
+                </p>
+
+                <p>
+                    Estimated voltage drop:
+                    <strong>
+                        approximately 6.251 V
+                    </strong>.
+                </p>
+
+                <p>
+                    Estimated voltage-drop percentage:
+                    <strong>
+                        approximately 2.605%
+                    </strong>.
+                </p>
+
+                <p>
+                    Because 8 AWG passes both screening conditions,
+                    the calculator returns <strong>8 AWG</strong>.
+                </p>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Important ampacity limitation
+                </h2>
+
+                <p>
+                    The ampacity values used by this calculator are a
+                    simplified screening table only. They do not represent
+                    every conductor type, insulation system, temperature
+                    rating, terminal limitation, installation method,
+                    or electrical-code condition.
+                </p>
+
+                <p>
+                    The design current entered should already reflect any
+                    load calculations or sizing factors that apply to the
+                    installation. This calculator does not automatically
+                    apply continuous-load multipliers, motor-specific sizing
+                    requirements, or other code-based adjustments.
+                </p>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Engineering considerations
+                </h2>
+
+                <p>
+                    Final conductor sizing may require consideration of
+                    conductor insulation rating, terminal temperature rating,
+                    ambient temperature, number of current-carrying conductors,
+                    raceway or cable installation, continuous loads, motors,
+                    overcurrent protection, grounding, equipment requirements,
+                    and other applicable rules.
+                </p>
+
+                <p>
+                    For AC systems, actual voltage drop can also be affected
+                    by conductor resistance at operating temperature,
+                    conductor reactance, circuit power factor, conductor
+                    arrangement, and parallel conductors.
+                </p>
+
+                <p>
+                    Always verify the final conductor selection using the
+                    applicable electrical code, project requirements,
+                    equipment documentation, and site-specific conditions.
+                </p>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Related calculators
+                </h2>
+
+                <p>
+                    Already know your conductor size? Use the
+                    <a href="voltage-drop.html">Voltage Drop Calculator</a>.
+                    You may also use the
+                    <a href="three-phase-power.html">Three-Phase Power Calculator</a>
+                    or
+                    <a href="motor-full-load-current.html">Motor Full-Load Current Calculator</a>
+                    when determining circuit load information.
+                </p>
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+    <footer class="footer">
+
+        <div class="container footer-top">
+
+            <div>
+
+                <a href="../index.html" class="logo">
+
+                    <span class="logo-icon">
+                        ⚡
+                    </span>
+
+                    <span>
+                        EE Tools
+                    </span>
+
+                </a>
+
+                <p>
+                    Free electrical engineering calculators and resources.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="container footer-bottom">
+
+            <span>
+                © 2026 EE Tools. All rights reserved.
+            </span>
+
+            <span>
+                Built for electrical engineering.
+            </span>
+
+        </div>
+
+    </footer>
+
+
+    <script>
+
+
+        /*
+            SIMPLIFIED CONDUCTOR SCREENING DATABASE
+        
+            These values are intentionally used as
+            preliminary ampacity-screening values.
+        
+            They are NOT a complete electrical-code
+            conductor-sizing implementation.
+        */
+
+
+        const copperConductors = [
+
+            { size: "14 AWG", cm: 4110, ampacity: 15 },
+            { size: "12 AWG", cm: 6530, ampacity: 20 },
+            { size: "10 AWG", cm: 10380, ampacity: 30 },
+            { size: "8 AWG", cm: 16510, ampacity: 50 },
+            { size: "6 AWG", cm: 26240, ampacity: 65 },
+            { size: "4 AWG", cm: 41740, ampacity: 85 },
+            { size: "3 AWG", cm: 52620, ampacity: 100 },
+            { size: "2 AWG", cm: 66360, ampacity: 115 },
+            { size: "1 AWG", cm: 83690, ampacity: 130 },
+
+            { size: "1/0 AWG", cm: 105600, ampacity: 150 },
+            { size: "2/0 AWG", cm: 133100, ampacity: 175 },
+            { size: "3/0 AWG", cm: 167800, ampacity: 200 },
+            { size: "4/0 AWG", cm: 211600, ampacity: 230 },
+
+            { size: "250 kcmil", cm: 250000, ampacity: 255 },
+            { size: "300 kcmil", cm: 300000, ampacity: 285 },
+            { size: "350 kcmil", cm: 350000, ampacity: 310 },
+            { size: "400 kcmil", cm: 400000, ampacity: 335 },
+            { size: "500 kcmil", cm: 500000, ampacity: 380 },
+            { size: "600 kcmil", cm: 600000, ampacity: 420 },
+            { size: "750 kcmil", cm: 750000, ampacity: 475 },
+            { size: "1000 kcmil", cm: 1000000, ampacity: 545 }
+
+        ];
+
+
+        const aluminumConductors = [
+
+            { size: "12 AWG", cm: 6530, ampacity: 15 },
+            { size: "10 AWG", cm: 10380, ampacity: 25 },
+            { size: "8 AWG", cm: 16510, ampacity: 40 },
+            { size: "6 AWG", cm: 26240, ampacity: 50 },
+            { size: "4 AWG", cm: 41740, ampacity: 65 },
+            { size: "3 AWG", cm: 52620, ampacity: 75 },
+            { size: "2 AWG", cm: 66360, ampacity: 90 },
+            { size: "1 AWG", cm: 83690, ampacity: 100 },
+
+            { size: "1/0 AWG", cm: 105600, ampacity: 120 },
+            { size: "2/0 AWG", cm: 133100, ampacity: 135 },
+            { size: "3/0 AWG", cm: 167800, ampacity: 155 },
+            { size: "4/0 AWG", cm: 211600, ampacity: 180 },
+
+            { size: "250 kcmil", cm: 250000, ampacity: 205 },
+            { size: "300 kcmil", cm: 300000, ampacity: 230 },
+            { size: "350 kcmil", cm: 350000, ampacity: 250 },
+            { size: "400 kcmil", cm: 400000, ampacity: 270 },
+            { size: "500 kcmil", cm: 500000, ampacity: 310 },
+            { size: "600 kcmil", cm: 600000, ampacity: 340 },
+            { size: "750 kcmil", cm: 750000, ampacity: 385 },
+            { size: "1000 kcmil", cm: 1000000, ampacity: 445 }
+
+        ];
+
+
+        function formatNumber(number) {
+
+            if (!Number.isFinite(number)) {
+                return "—";
+            }
+
+            if (
+                Math.abs(number) >= 1000000 ||
+                (
+                    Math.abs(number) > 0 &&
+                    Math.abs(number) < 0.001
+                )
+            ) {
+
+                return number.toExponential(4);
+
+            }
+
+            return Number(
+                number.toFixed(3)
+            ).toLocaleString();
+
+        }
+
+
+        function showError(message) {
+
+            const errorMessage =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+
+            const resultBox =
+                document.getElementById(
+                    "resultBox"
+                );
+
+
+            resultBox.classList.remove(
+                "show"
+            );
+
+
+            errorMessage.textContent =
+                message;
+
+
+            errorMessage.classList.add(
+                "show"
+            );
+
+        }
+
+
+        function calculateVoltageDrop(
+            phase,
+            material,
+            current,
+            length,
+            circularMils
+        ) {
+
+            const K =
+                material === "copper"
+                    ? 12.9
+                    : 21.2;
+
+
+            if (
+                phase === "three"
+            ) {
+
+                return (
+                    Math.sqrt(3) *
+                    K *
+                    current *
+                    length
+                ) /
+                    circularMils;
+
+            }
+
+
+            return (
+                2 *
+                K *
+                current *
+                length
+            ) /
+                circularMils;
+
+        }
+
+
+        function calculateCableSize() {
+
+
+            const phase =
+                document.getElementById(
+                    "phase"
+                ).value;
+
+
+            const material =
+                document.getElementById(
+                    "material"
+                ).value;
+
+
+            const voltageText =
+                document.getElementById(
+                    "voltage"
+                ).value.trim();
+
+
+            const currentText =
+                document.getElementById(
+                    "current"
+                ).value.trim();
+
+
+            const lengthText =
+                document.getElementById(
+                    "length"
+                ).value.trim();
+
+
+            const maxDropText =
+                document.getElementById(
+                    "maxDrop"
+                ).value.trim();
+
+
+            const errorMessage =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+
+            const resultBox =
+                document.getElementById(
+                    "resultBox"
+                );
+
+
+            errorMessage.classList.remove(
+                "show"
+            );
+
+            errorMessage.textContent = "";
+
+            resultBox.classList.remove(
+                "show"
+            );
+
+
+            if (
+                voltageText === "" ||
+                currentText === "" ||
+                lengthText === "" ||
+                maxDropText === ""
+            ) {
+
+                showError(
+                    "Please enter source voltage, load current, conductor length, and maximum voltage drop."
+                );
+
+                return;
+
+            }
+
+
+            const voltage =
+                Number(
+                    voltageText
+                );
+
+
+            const current =
+                Number(
+                    currentText
+                );
+
+
+            const length =
+                Number(
+                    lengthText
+                );
+
+
+            const maxDrop =
+                Number(
+                    maxDropText
+                );
+
+
+            if (
+                !Number.isFinite(voltage) ||
+                !Number.isFinite(current) ||
+                !Number.isFinite(length) ||
+                !Number.isFinite(maxDrop)
+            ) {
+
+                showError(
+                    "Please enter valid numeric circuit values."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                voltage <= 0 ||
+                current <= 0 ||
+                length <= 0
+            ) {
+
+                showError(
+                    "Voltage, current, and conductor length must be greater than zero."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                maxDrop <= 0 ||
+                maxDrop > 20
+            ) {
+
+                showError(
+                    "Maximum voltage drop must be greater than 0% and no more than 20%."
+                );
+
+                return;
+
+            }
+
+
+            const conductors =
+                material === "copper"
+                    ? copperConductors
+                    : aluminumConductors;
+
+
+            let recommended = null;
+
+            let recommendedDrop = null;
+
+            let recommendedDropPercent = null;
+
+            let firstAmpacityPassingIndex = -1;
+
+
+            /*
+                Find the first conductor that
+                passes the built-in ampacity screen.
+            */
+
+
+            for (
+                let i = 0;
+                i < conductors.length;
+                i++
+            ) {
+
+                if (
+                    conductors[i].ampacity >= current
+                ) {
+
+                    firstAmpacityPassingIndex = i;
+
+                    break;
+
+                }
+
+            }
+
+
+            /*
+                Check every conductor from smallest
+                to largest.
+        
+                It must pass BOTH:
+        
+                1. Built-in ampacity screen
+                2. Selected voltage-drop limit
+            */
+
+
+            for (
+                let i = 0;
+                i < conductors.length;
+                i++
+            ) {
+
+
+                const conductor =
+                    conductors[i];
+
+
+                const voltageDrop =
+                    calculateVoltageDrop(
+                        phase,
+                        material,
+                        current,
+                        length,
+                        conductor.cm
+                    );
+
+
+                const voltageDropPercent =
+                    (
+                        voltageDrop /
+                        voltage
+                    ) *
+                    100;
+
+
+                const ampacityPass =
+                    conductor.ampacity >=
+                    current;
+
+
+                const voltageDropPass =
+                    voltageDropPercent <=
+                    maxDrop;
+
+
+                if (
+                    ampacityPass &&
+                    voltageDropPass
+                ) {
+
+                    recommended =
+                        conductor;
+
+
+                    recommendedDrop =
+                        voltageDrop;
+
+
+                    recommendedDropPercent =
+                        voltageDropPercent;
+
+
+                    break;
+
+                }
+
+            }
+
+
+            if (
+                !recommended
+            ) {
+
+                showError(
+                    "No conductor in the built-in table satisfies both the entered design current and voltage-drop limit. A larger conductor, parallel conductors, higher distribution voltage, shorter circuit length, or another design approach may be required."
+                );
+
+                return;
+
+            }
+
+
+            const loadVoltage =
+                voltage -
+                recommendedDrop;
+
+
+            if (
+                !Number.isFinite(recommendedDrop) ||
+                !Number.isFinite(recommendedDropPercent) ||
+                !Number.isFinite(loadVoltage)
+            ) {
+
+                showError(
+                    "The entered values did not produce a valid finite result."
+                );
+
+                return;
+
+            }
+
+
+            /*
+                Determine what caused the calculator
+                to select this conductor.
+        
+                If the selected conductor is larger
+                than the first conductor that passed
+                the ampacity screen, voltage drop
+                forced the increase in size.
+            */
+
+
+            const recommendedIndex =
+                conductors.indexOf(
+                    recommended
+                );
+
+
+            let sizingDriver;
+
+
+            if (
+                firstAmpacityPassingIndex === -1
+            ) {
+
+                sizingDriver =
+                    "Ampacity";
+
+
+            } else if (
+                recommendedIndex >
+                firstAmpacityPassingIndex
+            ) {
+
+                sizingDriver =
+                    "Voltage Drop";
+
+
+            } else {
+
+                sizingDriver =
+                    "Ampacity";
+
+            }
+
+
+            document.getElementById(
+                "sizeResult"
+            ).textContent =
+                recommended.size;
+
+
+            document.getElementById(
+                "sizeHighlight"
+            ).textContent =
+                recommended.size;
+
+
+            document.getElementById(
+                "ampacityResult"
+            ).textContent =
+                formatNumber(
+                    recommended.ampacity
+                ) +
+                " A";
+
+
+            document.getElementById(
+                "voltageDropResult"
+            ).textContent =
+                formatNumber(
+                    recommendedDrop
+                ) +
+                " V";
+
+
+            document.getElementById(
+                "dropPercentResult"
+            ).textContent =
+                formatNumber(
+                    recommendedDropPercent
+                ) +
+                " %";
+
+
+            document.getElementById(
+                "loadVoltageResult"
+            ).textContent =
+                formatNumber(
+                    loadVoltage
+                ) +
+                " V";
+
+
+            document.getElementById(
+                "cmResult"
+            ).textContent =
+                recommended.cm.toLocaleString() +
+                " CM";
+
+
+            document.getElementById(
+                "materialResult"
+            ).textContent =
+                material === "copper"
+                    ? "Copper"
+                    : "Aluminum";
+
+
+            document.getElementById(
+                "phaseResult"
+            ).textContent =
+                phase === "three"
+                    ? "Three Phase"
+                    : "Single Phase";
+
+
+            document.getElementById(
+                "sizingDriverResult"
+            ).textContent =
+                sizingDriver;
+
+
+            document.getElementById(
+                "resultDescription"
+            ).textContent =
+                recommended.size +
+                " passes the calculator's built-in ampacity screen and produces an estimated voltage drop of " +
+                formatNumber(
+                    recommendedDropPercent
+                ) +
+                "%, which is within the selected " +
+                formatNumber(
+                    maxDrop
+                ) +
+                "% limit. Final conductor selection must still be verified for the actual installation.";
+
+
+            resultBox.classList.add(
+                "show"
+            );
+
+        }
+
+
+        function resetCalculator() {
+
+
+            document.getElementById(
+                "phase"
+            ).value =
+                "single";
+
+
+            document.getElementById(
+                "material"
+            ).value =
+                "copper";
+
+
+            document.getElementById(
+                "voltage"
+            ).value =
+                "";
+
+
+            document.getElementById(
+                "current"
+            ).value =
+                "";
+
+
+            document.getElementById(
+                "length"
+            ).value =
+                "";
+
+
+            document.getElementById(
+                "maxDrop"
+            ).value =
+                "3";
+
+
+            document.getElementById(
+                "resultBox"
+            ).classList.remove(
+                "show"
+            );
+
+
+            const errorMessage =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+
+            errorMessage.classList.remove(
+                "show"
+            );
+
+            errorMessage.textContent = "";
+
+
+            document.getElementById(
+                "sizeResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "sizeHighlight"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "ampacityResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "voltageDropResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "dropPercentResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "loadVoltageResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "cmResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "materialResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "phaseResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "sizingDriverResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "resultDescription"
+            ).textContent = "";
+
+        }
+
+
+    </script>
+
+
+</body>
+
+</html>

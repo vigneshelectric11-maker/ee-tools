@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+        content="Free power factor correction calculator to calculate capacitor kVAR, reactive power, apparent power, power factor improvement, and phase angle.">
+
+    <title>Power Factor Correction Calculator – Capacitor kVAR | EE Tools</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .calculator-page {
+            background: #f7f9fc;
+            min-height: 100vh;
+        }
+
+        .calculator-hero {
+            padding: 80px 20px 50px;
+            text-align: center;
+        }
+
+        .calculator-label {
+            display: inline-block;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #2563eb;
+            margin-bottom: 15px;
+        }
+
+        .calculator-hero h1 {
+            font-size: clamp(36px, 5vw, 56px);
+            margin: 0 0 18px;
+        }
+
+        .calculator-hero p {
+            max-width: 720px;
+            margin: 0 auto;
+            font-size: 18px;
+            line-height: 1.7;
+            color: #64748b;
+        }
+
+        .calculator-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px 80px;
+        }
+
+        .calculator-box {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 15px 50px rgba(15, 23, 42, 0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .calculator-box h2 {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+        .calculator-box-intro {
+            color: #64748b;
+            margin-bottom: 30px;
+            line-height: 1.7;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1e293b;
+        }
+
+        .input-description {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: stretch;
+        }
+
+        .input-wrapper input {
+            flex: 1;
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px 0 0 10px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .unit {
+            min-width: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-left: none;
+            border-radius: 0 10px 10px 0;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .calc-button,
+        .reset-button {
+            border: none;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .calc-button {
+            background: #2563eb;
+            color: white;
+        }
+
+        .reset-button {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .calc-button:hover,
+        .reset-button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .error-message {
+            display: none;
+            margin-top: 15px;
+            padding: 12px 15px;
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .result-box {
+            margin-top: 30px;
+            padding: 25px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 14px;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-box h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #dbeafe;
+        }
+
+        .result-item span {
+            display: block;
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 7px;
+        }
+
+        .result-item strong {
+            font-size: 22px;
+            color: #0f172a;
+        }
+
+        .result-highlight {
+            margin-top: 20px;
+            padding: 20px;
+            background: #0f172a;
+            color: white;
+            border-radius: 12px;
+        }
+
+        .result-highlight span {
+            display: block;
+            color: #cbd5e1;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .result-highlight strong {
+            font-size: 30px;
+        }
+
+        .formula-box {
+            margin-top: 30px;
+            padding: 25px;
+            background: #0f172a;
+            color: white;
+            border-radius: 14px;
+        }
+
+        .formula-box h3 {
+            margin-top: 0;
+        }
+
+        .formula {
+            font-size: 21px;
+            font-weight: 700;
+            margin: 12px 0;
+        }
+
+        .formula-description {
+            color: #cbd5e1;
+            line-height: 1.7;
+        }
+
+        .info-section {
+            margin-top: 40px;
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .info-section h2 {
+            margin-top: 0;
+        }
+
+        .info-section p {
+            color: #475569;
+            line-height: 1.8;
+        }
+
+        .formula-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .formula-table th,
+        .formula-table td {
+            padding: 14px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .formula-table th {
+            background: #f8fafc;
+        }
+
+        @media (max-width: 700px) {
+
+            .calculator-box {
+                padding: 22px;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .calc-button,
+            .reset-button {
+                width: 100%;
+            }
+
+            .calculator-hero {
+                padding-top: 50px;
+            }
+
+        }
+    </style>
+
+</head>
+
+
+<body class="calculator-page">
+
+
+    <header class="header">
+
+        <div class="container nav-container">
+
+            <a href="../index.html" class="logo">
+                <span class="logo-icon">⚡</span>
+                <span>EE Tools</span>
+            </a>
+
+            <nav class="navigation">
+
+                <a href="../index.html#calculators">
+                    Calculators
+                </a>
+
+                <a href="../index.html#categories">
+                    Categories
+                </a>
+
+                <a href="../index.html#resources">
+                    Resources
+                </a>
+
+                <a href="../index.html#about">
+                    About
+                </a>
+
+            </nav>
+
+            <a href="../index.html#calculators" class="nav-button">
+                All Tools
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <main>
+
+
+        <section class="calculator-hero">
+
+            <div class="calculator-label">
+                POWER SYSTEMS
+            </div>
+
+            <h1>
+                Power Factor Correction Calculator
+            </h1>
+
+            <p>
+                Calculate reactive power, capacitor kVAR, apparent power,
+                and phase angle required to improve a lagging power factor.
+            </p>
+
+        </section>
+
+
+        <section class="calculator-container">
+
+
+            <div class="calculator-box">
+
+
+                <h2>
+                    Enter known values
+                </h2>
+
+
+                <p class="calculator-box-intro">
+                    Enter real power, the existing lagging power factor,
+                    and the desired target power factor. The calculator
+                    estimates the capacitor reactive power required for correction.
+                </p>
+
+
+                <div class="input-grid">
+
+
+                    <div class="input-group">
+
+                        <label for="kw">
+                            Real Power
+                        </label>
+
+                        <div class="input-description">
+                            Active power consumed by the load
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="kw" placeholder="Example: 100" step="any" min="0">
+
+                            <span class="unit">
+                                kW
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="currentPF">
+                            Current Power Factor
+                        </label>
+
+                        <div class="input-description">
+                            Existing lagging power factor, greater than 0 and up to 1
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="currentPF" placeholder="Example: 0.80" step="0.01" min="0" max="1">
+
+                            <span class="unit">
+                                PF
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="targetPF">
+                            Target Power Factor
+                        </label>
+
+                        <div class="input-description">
+                            Desired power factor after correction
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="targetPF" placeholder="Example: 0.95" step="0.01" min="0" max="1">
+
+                            <span class="unit">
+                                PF
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <div id="errorMessage" class="error-message" role="alert">
+                </div>
+
+
+                <div class="button-row">
+
+                    <button type="button" class="calc-button" onclick="calculatePowerFactorCorrection()">
+
+                        Calculate
+
+                    </button>
+
+
+                    <button type="button" class="reset-button" onclick="resetCalculator()">
+
+                        Reset
+
+                    </button>
+
+                </div>
+
+
+                <div id="resultBox" class="result-box" aria-live="polite">
+
+                    <h3>
+                        Calculated Results
+                    </h3>
+
+
+                    <div class="results-grid">
+
+
+                        <div class="result-item">
+                            <span>Current Power Factor</span>
+                            <strong id="currentPFResult">—</strong>
+                        </div>
+
+
+                        <div class="result-item">
+                            <span>Target Power Factor</span>
+                            <strong id="targetPFResult">—</strong>
+                        </div>
+
+
+                        <div class="result-item">
+                            <span>Current Apparent Power</span>
+                            <strong id="currentKVAResult">—</strong>
+                        </div>
+
+
+                        <div class="result-item">
+                            <span>New Apparent Power</span>
+                            <strong id="newKVAResult">—</strong>
+                        </div>
+
+
+                        <div class="result-item">
+                            <span>Current Reactive Power</span>
+                            <strong id="currentKVARResult">—</strong>
+                        </div>
+
+
+                        <div class="result-item">
+                            <span>Target Reactive Power</span>
+                            <strong id="targetKVARResult">—</strong>
+                        </div>
+
+
+                        <div class="result-item">
+                            <span>Current Phase Angle</span>
+                            <strong id="currentAngleResult">—</strong>
+                        </div>
+
+
+                        <div class="result-item">
+                            <span>Target Phase Angle</span>
+                            <strong id="targetAngleResult">—</strong>
+                        </div>
+
+
+                        <div class="result-item">
+                            <span>Power Factor Increase</span>
+                            <strong id="pfCorrectionResult">—</strong>
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="result-highlight">
+
+                        <span>
+                            Required Capacitor Size
+                        </span>
+
+                        <strong id="capacitorResult">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="formula-box">
+
+                    <h3>
+                        Power Factor Correction Formula
+                    </h3>
+
+                    <div class="formula">
+                        Qc = P × [tan(φ₁) − tan(φ₂)]
+                    </div>
+
+                    <div class="formula-description">
+                        Qc is the required capacitive reactive power,
+                        P is real power, φ₁ is the existing power-factor angle,
+                        and φ₂ is the target power-factor angle.
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Power factor correction formulas
+                </h2>
+
+                <p>
+                    For a lagging load, capacitor compensation reduces the
+                    reactive power that must be supplied by the upstream
+                    electrical system.
+                </p>
+
+
+                <table class="formula-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Quantity</th>
+                            <th>Formula</th>
+                            <th>Unit</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        <tr>
+
+                            <td>
+                                Apparent Power
+                            </td>
+
+                            <td>
+                                S = P ÷ PF
+                            </td>
+
+                            <td>
+                                kVA
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Current Reactive Power
+                            </td>
+
+                            <td>
+                                Q₁ = P × tan(cos⁻¹(PF₁))
+                            </td>
+
+                            <td>
+                                kVAR
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Target Reactive Power
+                            </td>
+
+                            <td>
+                                Q₂ = P × tan(cos⁻¹(PF₂))
+                            </td>
+
+                            <td>
+                                kVAR
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Capacitor Size
+                            </td>
+
+                            <td>
+                                Qc = Q₁ − Q₂
+                            </td>
+
+                            <td>
+                                kVAR
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Phase Angle
+                            </td>
+
+                            <td>
+                                φ = cos⁻¹(PF)
+                            </td>
+
+                            <td>
+                                Degrees
+                            </td>
+
+                        </tr>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Example calculation
+                </h2>
+
+                <p>
+                    Assume a load consumes <strong>100 kW</strong>
+                    at a lagging power factor of <strong>0.80</strong>
+                    and the desired target power factor is <strong>0.95</strong>.
+                </p>
+
+                <p>
+                    Current apparent power:
+                    <strong>100 ÷ 0.80 = 125.000 kVA</strong>.
+                </p>
+
+                <p>
+                    Current reactive power:
+                    <strong>75.000 kVAR</strong>.
+                </p>
+
+                <p>
+                    Target reactive power:
+                    <strong>approximately 32.868 kVAR</strong>.
+                </p>
+
+                <p>
+                    Required capacitor size:
+                    <strong>approximately 42.132 kVAR</strong>.
+                </p>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Why power factor correction matters
+                </h2>
+
+                <p>
+                    Improving power factor reduces apparent power and,
+                    for a given system voltage and real power, can reduce
+                    the line current required to deliver that real power.
+                </p>
+
+                <p>
+                    Lower current can reduce losses and may free capacity
+                    in conductors, transformers, switchgear, and other
+                    distribution equipment.
+                </p>
+
+                <p>
+                    Practical capacitor-bank selection should also consider
+                    system voltage, frequency, harmonics, resonance, load
+                    variation, switching requirements, equipment ratings,
+                    and manufacturer recommendations.
+                </p>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Important engineering note
+                </h2>
+
+                <p>
+                    This calculator assumes an inductive or lagging load
+                    that is being corrected using capacitive reactive power.
+                    It does not model an already-leading load or automatically
+                    determine harmonic-filter or detuned-reactor requirements.
+                </p>
+
+                <p>
+                    The calculated kVAR is an engineering estimate. Actual
+                    capacitor-bank selection normally uses commercially available
+                    ratings and should be verified against the specific electrical
+                    system before installation.
+                </p>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Related calculators
+                </h2>
+
+                <p>
+                    You may also use the
+                    <a href="kva-kw-calculator.html">kW to kVA Calculator</a>,
+                    <a href="three-phase-power.html">Three-Phase Power Calculator</a>,
+                    or
+                    <a href="single-phase-power.html">Single-Phase Power Calculator</a>.
+                </p>
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+    <footer class="footer">
+
+        <div class="container footer-top">
+
+            <div>
+
+                <a href="../index.html" class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <span>EE Tools</span>
+                </a>
+
+                <p>
+                    Free electrical engineering calculators and resources.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="container footer-bottom">
+
+            <span>
+                © 2026 EE Tools. All rights reserved.
+            </span>
+
+            <span>
+                Built for electrical engineering.
+            </span>
+
+        </div>
+
+    </footer>
+
+
+    <script>
+
+
+        function formatNumber(number) {
+
+            if (!Number.isFinite(number)) {
+                return "—";
+            }
+
+            if (
+                Math.abs(number) >= 1000000 ||
+                (
+                    Math.abs(number) > 0 &&
+                    Math.abs(number) < 0.001
+                )
+            ) {
+
+                return number.toExponential(4);
+
+            }
+
+            return Number(
+                number.toFixed(3)
+            ).toLocaleString();
+
+        }
+
+
+        function showError(message) {
+
+            const errorMessage =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+            const resultBox =
+                document.getElementById(
+                    "resultBox"
+                );
+
+
+            resultBox.classList.remove(
+                "show"
+            );
+
+
+            errorMessage.textContent =
+                message;
+
+
+            errorMessage.classList.add(
+                "show"
+            );
+
+        }
+
+
+        function calculatePowerFactorCorrection() {
+
+
+            const kwText =
+                document.getElementById(
+                    "kw"
+                ).value.trim();
+
+
+            const currentPFText =
+                document.getElementById(
+                    "currentPF"
+                ).value.trim();
+
+
+            const targetPFText =
+                document.getElementById(
+                    "targetPF"
+                ).value.trim();
+
+
+            const errorMessage =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+
+            const resultBox =
+                document.getElementById(
+                    "resultBox"
+                );
+
+
+            errorMessage.classList.remove(
+                "show"
+            );
+
+            errorMessage.textContent = "";
+
+            resultBox.classList.remove(
+                "show"
+            );
+
+
+            if (
+                kwText === "" ||
+                currentPFText === "" ||
+                targetPFText === ""
+            ) {
+
+                showError(
+                    "Please enter real power, current power factor, and target power factor."
+                );
+
+                return;
+
+            }
+
+
+            const kw =
+                Number(
+                    kwText
+                );
+
+
+            const currentPF =
+                Number(
+                    currentPFText
+                );
+
+
+            const targetPF =
+                Number(
+                    targetPFText
+                );
+
+
+            if (
+                !Number.isFinite(kw) ||
+                !Number.isFinite(currentPF) ||
+                !Number.isFinite(targetPF)
+            ) {
+
+                showError(
+                    "Please enter valid numeric values."
+                );
+
+                return;
+
+            }
+
+
+            if (kw <= 0) {
+
+                showError(
+                    "Real power must be greater than 0."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                currentPF <= 0 ||
+                currentPF > 1
+            ) {
+
+                showError(
+                    "Current power factor must be greater than 0 and less than or equal to 1."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                targetPF <= 0 ||
+                targetPF > 1
+            ) {
+
+                showError(
+                    "Target power factor must be greater than 0 and less than or equal to 1."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                targetPF < currentPF
+            ) {
+
+                showError(
+                    "Target power factor must be greater than or equal to the current power factor."
+                );
+
+                return;
+
+            }
+
+
+            const currentKVA =
+                kw /
+                currentPF;
+
+
+            const newKVA =
+                kw /
+                targetPF;
+
+
+            const currentAngleRadians =
+                Math.acos(
+                    currentPF
+                );
+
+
+            const targetAngleRadians =
+                Math.acos(
+                    targetPF
+                );
+
+
+            const currentAngleDegrees =
+                currentAngleRadians *
+                (
+                    180 /
+                    Math.PI
+                );
+
+
+            const targetAngleDegrees =
+                targetAngleRadians *
+                (
+                    180 /
+                    Math.PI
+                );
+
+
+            const currentKVAR =
+                kw *
+                Math.tan(
+                    currentAngleRadians
+                );
+
+
+            const targetKVAR =
+                kw *
+                Math.tan(
+                    targetAngleRadians
+                );
+
+
+            const capacitorKVAR =
+                Math.max(
+                    0,
+                    currentKVAR -
+                    targetKVAR
+                );
+
+
+            const pfImprovement =
+                targetPF -
+                currentPF;
+
+
+            if (
+                !Number.isFinite(currentKVA) ||
+                !Number.isFinite(newKVA) ||
+                !Number.isFinite(currentKVAR) ||
+                !Number.isFinite(targetKVAR) ||
+                !Number.isFinite(capacitorKVAR) ||
+                !Number.isFinite(currentAngleDegrees) ||
+                !Number.isFinite(targetAngleDegrees)
+            ) {
+
+                showError(
+                    "The entered values did not produce a valid finite result."
+                );
+
+                return;
+
+            }
+
+
+            document.getElementById(
+                "currentPFResult"
+            ).textContent =
+                formatNumber(
+                    currentPF
+                );
+
+
+            document.getElementById(
+                "targetPFResult"
+            ).textContent =
+                formatNumber(
+                    targetPF
+                );
+
+
+            document.getElementById(
+                "currentKVAResult"
+            ).textContent =
+                formatNumber(
+                    currentKVA
+                ) +
+                " kVA";
+
+
+            document.getElementById(
+                "newKVAResult"
+            ).textContent =
+                formatNumber(
+                    newKVA
+                ) +
+                " kVA";
+
+
+            document.getElementById(
+                "currentKVARResult"
+            ).textContent =
+                formatNumber(
+                    currentKVAR
+                ) +
+                " kVAR";
+
+
+            document.getElementById(
+                "targetKVARResult"
+            ).textContent =
+                formatNumber(
+                    targetKVAR
+                ) +
+                " kVAR";
+
+
+            document.getElementById(
+                "currentAngleResult"
+            ).textContent =
+                formatNumber(
+                    currentAngleDegrees
+                ) +
+                "°";
+
+
+            document.getElementById(
+                "targetAngleResult"
+            ).textContent =
+                formatNumber(
+                    targetAngleDegrees
+                ) +
+                "°";
+
+
+            document.getElementById(
+                "pfCorrectionResult"
+            ).textContent =
+                "+" +
+                formatNumber(
+                    pfImprovement
+                );
+
+
+            document.getElementById(
+                "capacitorResult"
+            ).textContent =
+                formatNumber(
+                    capacitorKVAR
+                ) +
+                " kVAR";
+
+
+            resultBox.classList.add(
+                "show"
+            );
+
+        }
+
+
+        function resetCalculator() {
+
+
+            document.getElementById(
+                "kw"
+            ).value = "";
+
+
+            document.getElementById(
+                "currentPF"
+            ).value = "";
+
+
+            document.getElementById(
+                "targetPF"
+            ).value = "";
+
+
+            document.getElementById(
+                "resultBox"
+            ).classList.remove(
+                "show"
+            );
+
+
+            const errorMessage =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+
+            errorMessage.classList.remove(
+                "show"
+            );
+
+            errorMessage.textContent = "";
+
+
+            document.getElementById(
+                "currentPFResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "targetPFResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "currentKVAResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "newKVAResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "currentKVARResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "targetKVARResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "currentAngleResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "targetAngleResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "pfCorrectionResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "capacitorResult"
+            ).textContent = "—";
+
+
+        }
+
+
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+        content="Free three-phase power calculator to calculate real power in kW, apparent power in kVA, reactive power in kVAR, and power factor for balanced three-phase electrical systems.">
+
+    <title>Three-Phase Power Calculator – kW, kVA & kVAR | EE Tools</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .calculator-page {
+            background: #f7f9fc;
+            min-height: 100vh;
+        }
+
+        .calculator-hero {
+            padding: 80px 20px 50px;
+            text-align: center;
+        }
+
+        .calculator-label {
+            display: inline-block;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #2563eb;
+            margin-bottom: 15px;
+        }
+
+        .calculator-hero h1 {
+            font-size: clamp(36px, 5vw, 56px);
+            margin: 0 0 18px;
+        }
+
+        .calculator-hero p {
+            max-width: 720px;
+            margin: 0 auto;
+            font-size: 18px;
+            line-height: 1.7;
+            color: #64748b;
+        }
+
+        .calculator-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px 80px;
+        }
+
+        .calculator-box {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 15px 50px rgba(15, 23, 42, 0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .calculator-box h2 {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+        .calculator-box-intro {
+            color: #64748b;
+            margin-bottom: 30px;
+            line-height: 1.7;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1e293b;
+        }
+
+        .input-description {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: stretch;
+        }
+
+        .input-wrapper input {
+            flex: 1;
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px 0 0 10px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .unit {
+            min-width: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-left: none;
+            border-radius: 0 10px 10px 0;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .calc-button,
+        .reset-button {
+            border: none;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .calc-button {
+            background: #2563eb;
+            color: white;
+        }
+
+        .reset-button {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .calc-button:hover,
+        .reset-button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .error-message {
+            display: none;
+            margin-top: 15px;
+            padding: 12px 15px;
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .result-box {
+            margin-top: 30px;
+            padding: 25px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 14px;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-box h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #dbeafe;
+        }
+
+        .result-item span {
+            display: block;
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 7px;
+        }
+
+        .result-item strong {
+            font-size: 22px;
+            color: #0f172a;
+        }
+
+        .result-highlight {
+            margin-top: 20px;
+            padding: 20px;
+            background: #0f172a;
+            color: white;
+            border-radius: 12px;
+        }
+
+        .result-highlight span {
+            display: block;
+            color: #cbd5e1;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .result-highlight strong {
+            font-size: 30px;
+        }
+
+        .formula-box {
+            margin-top: 30px;
+            padding: 25px;
+            background: #0f172a;
+            color: white;
+            border-radius: 14px;
+        }
+
+        .formula-box h3 {
+            margin-top: 0;
+        }
+
+        .formula {
+            font-size: 21px;
+            font-weight: 700;
+            margin: 12px 0;
+        }
+
+        .formula-description {
+            color: #cbd5e1;
+            line-height: 1.7;
+        }
+
+        .info-section {
+            margin-top: 40px;
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .info-section h2 {
+            margin-top: 0;
+        }
+
+        .info-section p {
+            color: #475569;
+            line-height: 1.8;
+        }
+
+        .formula-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .formula-table th,
+        .formula-table td {
+            padding: 14px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .formula-table th {
+            background: #f8fafc;
+        }
+
+        @media (max-width: 700px) {
+
+            .calculator-box {
+                padding: 22px;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .calc-button,
+            .reset-button {
+                width: 100%;
+            }
+
+            .calculator-hero {
+                padding-top: 50px;
+            }
+
+        }
+    </style>
+
+</head>
+
+<body class="calculator-page">
+
+
+    <header class="header">
+
+        <div class="container nav-container">
+
+            <a href="../index.html" class="logo">
+                <span class="logo-icon">⚡</span>
+                <span>EE Tools</span>
+            </a>
+
+            <nav class="navigation">
+
+                <a href="../index.html#calculators">
+                    Calculators
+                </a>
+
+                <a href="../index.html#categories">
+                    Categories
+                </a>
+
+                <a href="../index.html#resources">
+                    Resources
+                </a>
+
+                <a href="../index.html#about">
+                    About
+                </a>
+
+            </nav>
+
+            <a href="../index.html#calculators" class="nav-button">
+                All Tools
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <main>
+
+
+        <section class="calculator-hero">
+
+            <div class="calculator-label">
+                POWER SYSTEMS
+            </div>
+
+            <h1>
+                Three-Phase Power Calculator
+            </h1>
+
+            <p>
+                Calculate real power, apparent power, and reactive power
+                for balanced three-phase electrical systems.
+            </p>
+
+        </section>
+
+
+        <section class="calculator-container">
+
+
+            <div class="calculator-box">
+
+                <h2>
+                    Enter system values
+                </h2>
+
+                <p class="calculator-box-intro">
+                    Enter the line-to-line voltage, line current, and power factor.
+                    The calculator will determine the three-phase real, apparent,
+                    and reactive power.
+                </p>
+
+
+                <div class="input-grid">
+
+
+                    <div class="input-group">
+
+                        <label for="voltage">
+                            Line Voltage
+                        </label>
+
+                        <div class="input-description">
+                            Line-to-line RMS voltage
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="voltage" placeholder="Example: 480" step="any" min="0">
+
+                            <span class="unit">
+                                V
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="current">
+                            Line Current
+                        </label>
+
+                        <div class="input-description">
+                            RMS line current
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="current" placeholder="Example: 125" step="any" min="0">
+
+                            <span class="unit">
+                                A
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="powerFactor">
+                            Power Factor
+                        </label>
+
+                        <div class="input-description">
+                            Enter a value from 0 to 1
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="powerFactor" placeholder="Example: 0.92" step="0.01" min="0"
+                                max="1">
+
+                            <span class="unit">
+                                PF
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <div id="errorMessage" class="error-message" role="alert">
+                </div>
+
+
+                <div class="button-row">
+
+                    <button type="button" class="calc-button" onclick="calculateThreePhasePower()">
+
+                        Calculate
+
+                    </button>
+
+
+                    <button type="button" class="reset-button" onclick="resetCalculator()">
+
+                        Reset
+
+                    </button>
+
+                </div>
+
+
+                <div id="resultBox" class="result-box" aria-live="polite">
+
+                    <h3>
+                        Calculated Results
+                    </h3>
+
+
+                    <div class="results-grid">
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Real Power
+                            </span>
+
+                            <strong id="realPower">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Apparent Power
+                            </span>
+
+                            <strong id="apparentPower">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Reactive Power
+                            </span>
+
+                            <strong id="reactivePower">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="result-highlight">
+
+                        <span>
+                            Real Power
+                        </span>
+
+                        <strong id="realPowerHighlight">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="formula-box">
+
+                    <h3>
+                        Three-Phase Power Formula
+                    </h3>
+
+                    <div class="formula">
+                        P = √3 × V × I × PF
+                    </div>
+
+                    <div class="formula-description">
+
+                        Where P is real power, V is line-to-line RMS voltage,
+                        I is line current, and PF is power factor. The formula
+                        assumes a balanced three-phase system.
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Three-phase power formulas
+                </h2>
+
+                <p>
+                    In a balanced three-phase system, electrical power can
+                    be expressed as real power, apparent power, and reactive
+                    power.
+                </p>
+
+
+                <table class="formula-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Quantity
+                            </th>
+
+                            <th>
+                                Formula
+                            </th>
+
+                            <th>
+                                Unit
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        <tr>
+
+                            <td>
+                                Real Power
+                            </td>
+
+                            <td>
+                                P = √3 × V × I × PF
+                            </td>
+
+                            <td>
+                                kW
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Apparent Power
+                            </td>
+
+                            <td>
+                                S = √3 × V × I
+                            </td>
+
+                            <td>
+                                kVA
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Reactive Power
+                            </td>
+
+                            <td>
+                                Q = √(S² − P²)
+                            </td>
+
+                            <td>
+                                kVAR
+                            </td>
+
+                        </tr>
+
+
+                    </tbody>
+
+                </table>
+
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    How to use this calculator
+                </h2>
+
+                <p>
+                    Enter the three-phase line-to-line voltage, line current,
+                    and power factor. For example, a 480 V three-phase system
+                    operating at 125 A with a power factor of 0.92 produces
+                    approximately 95.609 kW of real power, 103.923 kVA of
+                    apparent power, and 40.729 kVAR of reactive power.
+                </p>
+
+                <p>
+                    The calculator assumes a balanced three-phase system and
+                    uses RMS quantities. Always verify actual system conditions,
+                    equipment ratings, applicable electrical codes, and engineering
+                    requirements before using calculated values for design or
+                    field decisions.
+                </p>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    What do kW, kVA, and kVAR mean?
+                </h2>
+
+                <p>
+                    Real power, measured in kilowatts (kW), represents the power
+                    that performs useful work. Apparent power, measured in
+                    kilovolt-amperes (kVA), represents the total RMS voltage-current
+                    product supplied to the load. Reactive power, measured in kVAR,
+                    represents the non-working component associated with reactive
+                    energy exchange in AC systems.
+                </p>
+
+                <p>
+                    Power factor is the ratio of real power to apparent power.
+                    A power factor closer to 1 means that a greater portion of
+                    the apparent power is being converted into real power.
+                </p>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Related calculators
+                </h2>
+
+                <p>
+                    For single-phase systems, use the
+                    <a href="single-phase-power.html">Single-Phase Power Calculator</a>.
+                    You can also use the
+                    <a href="kva-kw-calculator.html">kW to kVA Calculator</a>
+                    or the
+                    <a href="power-factor.html">Power Factor Calculator</a>.
+                </p>
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+    <footer class="footer">
+
+        <div class="container footer-top">
+
+            <div>
+
+                <a href="../index.html" class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <span>EE Tools</span>
+                </a>
+
+                <p>
+                    Free electrical engineering calculators and resources.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="container footer-bottom">
+
+            <span>
+                © 2026 EE Tools. All rights reserved.
+            </span>
+
+            <span>
+                Built for electrical engineering.
+            </span>
+
+        </div>
+
+    </footer>
+
+
+    <script>
+
+
+        function formatNumber(number) {
+
+            if (!Number.isFinite(number)) {
+                return "—";
+            }
+
+            if (
+                Math.abs(number) >= 1000000 ||
+                (
+                    Math.abs(number) > 0 &&
+                    Math.abs(number) < 0.001
+                )
+            ) {
+
+                return number.toExponential(4);
+
+            }
+
+            return Number(
+                number.toFixed(3)
+            ).toLocaleString();
+
+        }
+
+
+        function showError(message) {
+
+            const errorMessage =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+            const resultBox =
+                document.getElementById(
+                    "resultBox"
+                );
+
+            resultBox.classList.remove("show");
+
+            errorMessage.textContent =
+                message;
+
+            errorMessage.classList.add(
+                "show"
+            );
+
+        }
+
+
+        function calculateThreePhasePower() {
+
+
+            const voltageText =
+                document.getElementById(
+                    "voltage"
+                ).value.trim();
+
+
+            const currentText =
+                document.getElementById(
+                    "current"
+                ).value.trim();
+
+
+            const powerFactorText =
+                document.getElementById(
+                    "powerFactor"
+                ).value.trim();
+
+
+            const errorMessage =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+
+            const resultBox =
+                document.getElementById(
+                    "resultBox"
+                );
+
+
+            errorMessage.classList.remove(
+                "show"
+            );
+
+            errorMessage.textContent = "";
+
+            resultBox.classList.remove(
+                "show"
+            );
+
+
+            if (
+                voltageText === "" ||
+                currentText === "" ||
+                powerFactorText === ""
+            ) {
+
+                showError(
+                    "Please enter voltage, current, and power factor."
+                );
+
+                return;
+
+            }
+
+
+            const voltage =
+                Number(voltageText);
+
+
+            const current =
+                Number(currentText);
+
+
+            const powerFactor =
+                Number(powerFactorText);
+
+
+            if (
+                !Number.isFinite(voltage) ||
+                !Number.isFinite(current) ||
+                !Number.isFinite(powerFactor)
+            ) {
+
+                showError(
+                    "Please enter valid numeric values."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                voltage <= 0 ||
+                current <= 0
+            ) {
+
+                showError(
+                    "Voltage and current must be greater than zero."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                powerFactor < 0 ||
+                powerFactor > 1
+            ) {
+
+                showError(
+                    "Power factor must be between 0 and 1."
+                );
+
+                return;
+
+            }
+
+
+            /*
+                BALANCED THREE-PHASE POWER
+        
+                Apparent power:
+                S = √3 × VLL × IL
+        
+                Real power:
+                P = S × PF
+        
+                Reactive power magnitude:
+                Q = √(S² − P²)
+            */
+
+
+            const apparentPowerVA =
+                Math.sqrt(3) *
+                voltage *
+                current;
+
+
+            const realPowerW =
+                apparentPowerVA *
+                powerFactor;
+
+
+            const reactivePowerVAR =
+                Math.sqrt(
+                    Math.max(
+                        0,
+                        (
+                            apparentPowerVA *
+                            apparentPowerVA
+                        ) -
+                        (
+                            realPowerW *
+                            realPowerW
+                        )
+                    )
+                );
+
+
+            const apparentPowerKVA =
+                apparentPowerVA / 1000;
+
+
+            const realPowerKW =
+                realPowerW / 1000;
+
+
+            const reactivePowerKVAR =
+                reactivePowerVAR / 1000;
+
+
+            document.getElementById(
+                "realPower"
+            ).textContent =
+                formatNumber(realPowerKW) +
+                " kW";
+
+
+            document.getElementById(
+                "apparentPower"
+            ).textContent =
+                formatNumber(apparentPowerKVA) +
+                " kVA";
+
+
+            document.getElementById(
+                "reactivePower"
+            ).textContent =
+                formatNumber(reactivePowerKVAR) +
+                " kVAR";
+
+
+            document.getElementById(
+                "realPowerHighlight"
+            ).textContent =
+                formatNumber(realPowerKW) +
+                " kW";
+
+
+            resultBox.classList.add(
+                "show"
+            );
+
+        }
+
+
+        function resetCalculator() {
+
+
+            document.getElementById(
+                "voltage"
+            ).value = "";
+
+
+            document.getElementById(
+                "current"
+            ).value = "";
+
+
+            document.getElementById(
+                "powerFactor"
+            ).value = "";
+
+
+            document.getElementById(
+                "resultBox"
+            ).classList.remove(
+                "show"
+            );
+
+
+            const errorMessage =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+
+            errorMessage.classList.remove(
+                "show"
+            );
+
+            errorMessage.textContent = "";
+
+        }
+
+
+    </script>
+
+
+</body>
+
+</html>

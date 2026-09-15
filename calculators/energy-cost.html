@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+        content="Free electricity energy cost calculator. Calculate daily, monthly, and yearly kWh usage and estimated electricity cost from power, operating time, quantity, and electricity rate.">
+
+    <title>Energy Cost Calculator – kWh & Electricity Cost | EE Tools</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .calculator-page {
+            background: #f7f9fc;
+            min-height: 100vh;
+        }
+
+        .calculator-hero {
+            padding: 80px 20px 50px;
+            text-align: center;
+        }
+
+        .calculator-label {
+            display: inline-block;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #2563eb;
+            margin-bottom: 15px;
+        }
+
+        .calculator-hero h1 {
+            font-size: clamp(36px, 5vw, 56px);
+            margin: 0 0 18px;
+        }
+
+        .calculator-hero p {
+            max-width: 720px;
+            margin: 0 auto;
+            font-size: 18px;
+            line-height: 1.7;
+            color: #64748b;
+        }
+
+        .calculator-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px 80px;
+        }
+
+        .calculator-box {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 15px 50px rgba(15, 23, 42, 0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .calculator-box h2 {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+        .calculator-box-intro {
+            color: #64748b;
+            margin-bottom: 30px;
+            line-height: 1.7;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1e293b;
+        }
+
+        .input-description {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: stretch;
+        }
+
+        .input-wrapper input,
+        .input-wrapper select {
+            flex: 1;
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px 0 0 10px;
+            font-size: 16px;
+            outline: none;
+            background: white;
+            color: #0f172a;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-wrapper select {
+            cursor: pointer;
+        }
+
+        .input-wrapper input:focus,
+        .input-wrapper select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .unit {
+            min-width: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-left: none;
+            border-radius: 0 10px 10px 0;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .calc-button,
+        .reset-button {
+            border: none;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .calc-button {
+            background: #2563eb;
+            color: white;
+        }
+
+        .reset-button {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .calc-button:hover,
+        .reset-button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .error-message {
+            display: none;
+            margin-top: 15px;
+            padding: 12px 15px;
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .result-box {
+            margin-top: 30px;
+            padding: 25px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 14px;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-box h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #dbeafe;
+        }
+
+        .result-item span {
+            display: block;
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 7px;
+        }
+
+        .result-item strong {
+            font-size: 22px;
+            color: #0f172a;
+        }
+
+        .result-highlight {
+            margin-top: 20px;
+            padding: 20px;
+            background: #0f172a;
+            color: white;
+            border-radius: 12px;
+        }
+
+        .result-highlight span {
+            display: block;
+            color: #cbd5e1;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .result-highlight strong {
+            font-size: 30px;
+        }
+
+        .result-highlight p {
+            color: #cbd5e1;
+            margin: 10px 0 0;
+            line-height: 1.7;
+        }
+
+        .formula-box {
+            margin-top: 30px;
+            padding: 25px;
+            background: #0f172a;
+            color: white;
+            border-radius: 14px;
+        }
+
+        .formula-box h3 {
+            margin-top: 0;
+        }
+
+        .formula {
+            font-size: 21px;
+            font-weight: 700;
+            margin: 12px 0;
+        }
+
+        .formula-description {
+            color: #cbd5e1;
+            line-height: 1.7;
+        }
+
+        .info-section {
+            margin-top: 40px;
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .info-section h2 {
+            margin-top: 0;
+        }
+
+        .info-section p {
+            color: #475569;
+            line-height: 1.8;
+        }
+
+        .formula-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .formula-table th,
+        .formula-table td {
+            padding: 14px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .formula-table th {
+            background: #f8fafc;
+        }
+
+        @media (max-width: 700px) {
+
+            .calculator-box {
+                padding: 22px;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .calc-button,
+            .reset-button {
+                width: 100%;
+            }
+
+            .calculator-hero {
+                padding-top: 50px;
+            }
+
+        }
+    </style>
+
+</head>
+
+
+<body class="calculator-page">
+
+
+    <header class="header">
+
+        <div class="container nav-container">
+
+            <a href="../index.html" class="logo">
+
+                <span class="logo-icon">⚡</span>
+
+                <span>EE Tools</span>
+
+            </a>
+
+
+            <nav class="navigation">
+
+                <a href="../index.html#calculators">
+                    Calculators
+                </a>
+
+                <a href="../index.html#categories">
+                    Categories
+                </a>
+
+                <a href="../index.html#resources">
+                    Resources
+                </a>
+
+                <a href="../index.html#about">
+                    About
+                </a>
+
+            </nav>
+
+
+            <a href="../index.html#calculators" class="nav-button">
+                All Tools
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <main>
+
+
+        <section class="calculator-hero">
+
+            <div class="calculator-label">
+                ENERGY
+            </div>
+
+            <h1>
+                Energy Cost Calculator
+            </h1>
+
+            <p>
+                Calculate electricity consumption and estimate daily,
+                monthly, and yearly operating costs for electrical equipment.
+            </p>
+
+        </section>
+
+
+        <section class="calculator-container">
+
+
+            <div class="calculator-box">
+
+
+                <h2>
+                    Enter energy usage information
+                </h2>
+
+
+                <p class="calculator-box-intro">
+                    Enter equipment power, average daily operating time,
+                    operating days per month, electricity rate, and number
+                    of identical devices.
+                </p>
+
+
+                <div class="input-grid">
+
+
+                    <div class="input-group">
+
+                        <label for="powerUnit">
+                            Power Unit
+                        </label>
+
+                        <div class="input-description">
+                            Select watts or kilowatts
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <select id="powerUnit" onchange="updatePowerUnit()">
+
+                                <option value="w" selected>
+                                    Watts
+                                </option>
+
+                                <option value="kw">
+                                    Kilowatts
+                                </option>
+
+                            </select>
+
+                            <span class="unit" id="powerUnitDisplay">
+
+                                W
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="power">
+                            Equipment Power
+                        </label>
+
+                        <div class="input-description">
+                            Rated, average, or measured electrical power per device
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="power" placeholder="Example: 1500" step="any" min="0">
+
+                            <span class="unit" id="powerInputUnit">
+
+                                W
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="hoursPerDay">
+                            Operating Time
+                        </label>
+
+                        <div class="input-description">
+                            Average operating hours per day
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="hoursPerDay" placeholder="Example: 8" step="any" min="0" max="24">
+
+                            <span class="unit">
+                                hr/day
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="daysPerMonth">
+                            Operating Days
+                        </label>
+
+                        <div class="input-description">
+                            Whole number of operating days per month
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="daysPerMonth" placeholder="Example: 30" step="1" min="1" max="31">
+
+                            <span class="unit">
+                                days
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="rate">
+                            Electricity Rate
+                        </label>
+
+                        <div class="input-description">
+                            Energy charge per kilowatt-hour
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="rate" placeholder="Example: 0.18" step="any" min="0">
+
+                            <span class="unit">
+                                $/kWh
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="quantity">
+                            Number of Devices
+                        </label>
+
+                        <div class="input-description">
+                            Quantity of identical devices
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="quantity" value="1" step="1" min="1">
+
+                            <span class="unit">
+                                units
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <div id="errorMessage" class="error-message" role="alert">
+                </div>
+
+
+                <div class="button-row">
+
+                    <button type="button" class="calc-button" onclick="calculateEnergyCost()">
+
+                        Calculate
+
+                    </button>
+
+
+                    <button type="button" class="reset-button" onclick="resetCalculator()">
+
+                        Reset
+
+                    </button>
+
+                </div>
+
+
+                <div id="resultBox" class="result-box" aria-live="polite">
+
+                    <h3>
+                        Calculated Results
+                    </h3>
+
+
+                    <div class="results-grid">
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Total Connected Power
+                            </span>
+
+                            <strong id="totalPowerResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Daily Energy Use
+                            </span>
+
+                            <strong id="dailyEnergyResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Monthly Energy Use
+                            </span>
+
+                            <strong id="monthlyEnergyResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Yearly Energy Use
+                            </span>
+
+                            <strong id="yearlyEnergyResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Daily Operating Cost
+                            </span>
+
+                            <strong id="dailyCostResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Monthly Cost
+                            </span>
+
+                            <strong id="monthlyCostResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Yearly Cost
+                            </span>
+
+                            <strong id="yearlyCostResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Electricity Rate
+                            </span>
+
+                            <strong id="rateResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="result-highlight">
+
+                        <span>
+                            Estimated Monthly Electricity Cost
+                        </span>
+
+                        <strong id="monthlyCostHighlight">
+                            —
+                        </strong>
+
+                        <p id="costDescription">
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="formula-box">
+
+                    <h3>
+                        Energy Cost Formulas
+                    </h3>
+
+
+                    <div class="formula">
+                        Energy (kWh) = Power (kW) × Time (hours)
+                    </div>
+
+
+                    <div class="formula">
+                        Cost = Energy (kWh) × Electricity Rate
+                    </div>
+
+
+                    <div class="formula">
+                        Monthly Energy = Daily Energy × Operating Days
+                    </div>
+
+
+                    <div class="formula-description">
+                        Electrical energy is commonly measured in kilowatt-hours.
+                        A 1 kW load operating for one hour consumes 1 kWh.
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Understanding electricity cost
+                </h2>
+
+                <p>
+                    Electrical equipment consumes energy according to its
+                    average electrical power and operating time.
+                </p>
+
+                <p>
+                    For example, a 1 kW load operating for one hour
+                    consumes 1 kWh of electrical energy.
+                </p>
+
+                <p>
+                    Utility bills may also include service charges, taxes,
+                    demand charges, fuel adjustments, time-of-use rates,
+                    and other fees. This calculator estimates the energy-charge
+                    portion using the electricity rate entered.
+                </p>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Energy cost formulas
+                </h2>
+
+
+                <table class="formula-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Calculation
+                            </th>
+
+                            <th>
+                                Formula
+                            </th>
+
+                            <th>
+                                Unit
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        <tr>
+
+                            <td>
+                                Watts to Kilowatts
+                            </td>
+
+                            <td>
+                                kW = W ÷ 1000
+                            </td>
+
+                            <td>
+                                kW
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Total Connected Power
+                            </td>
+
+                            <td>
+                                Total kW = power per device × quantity
+                            </td>
+
+                            <td>
+                                kW
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Daily Energy
+                            </td>
+
+                            <td>
+                                kWh/day = total kW × hours/day
+                            </td>
+
+                            <td>
+                                kWh
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Monthly Energy
+                            </td>
+
+                            <td>
+                                kWh/month = daily kWh × operating days
+                            </td>
+
+                            <td>
+                                kWh
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Energy Cost
+                            </td>
+
+                            <td>
+                                Cost = kWh × electricity rate
+                            </td>
+
+                            <td>
+                                $
+                            </td>
+
+                        </tr>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Example calculation
+                </h2>
+
+                <p>
+                    Consider one <strong>1,500 W</strong> electrical load
+                    operating for <strong>8 hours per day</strong>,
+                    <strong>30 days per month</strong>, with an electricity
+                    rate of <strong>$0.18/kWh</strong>.
+                </p>
+
+                <p>
+                    Convert power to kilowatts:
+                    <strong>
+                        1500 W ÷ 1000 = 1.5 kW
+                    </strong>.
+                </p>
+
+                <p>
+                    Daily energy use:
+                    <strong>
+                        1.5 × 8 = 12 kWh
+                    </strong>.
+                </p>
+
+                <p>
+                    Monthly energy use:
+                    <strong>
+                        12 × 30 = 360 kWh
+                    </strong>.
+                </p>
+
+                <p>
+                    Estimated monthly energy cost:
+                    <strong>
+                        360 × $0.18 = $64.80
+                    </strong>.
+                </p>
+
+                <p>
+                    If the same monthly usage pattern continues for
+                    12 months, the estimated yearly energy use is
+                    <strong>4,320 kWh</strong> and the estimated yearly
+                    energy cost is <strong>$777.60</strong>.
+                </p>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Engineering considerations
+                </h2>
+
+                <p>
+                    Actual energy consumption may differ from equipment
+                    nameplate power when a device cycles on and off,
+                    operates at partial load, or changes operating mode.
+                </p>
+
+                <p>
+                    Motors, HVAC equipment, variable-frequency drives,
+                    compressors, heaters, pumps, and other loads can have
+                    operating profiles that vary substantially throughout
+                    the day.
+                </p>
+
+                <p>
+                    For more accurate estimates, use measured average power
+                    or actual energy-meter data when available.
+                </p>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Important cost estimate note
+                </h2>
+
+                <p>
+                    The daily cost shown represents the cost for one operating
+                    day at the entered number of hours. Monthly cost multiplies
+                    that amount by the entered operating days per month.
+                </p>
+
+                <p>
+                    The yearly estimate assumes the same monthly energy-use
+                    pattern continues for 12 months. It does not automatically
+                    account for seasonal usage or changing utility rates.
+                </p>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Related calculators
+                </h2>
+
+                <p>
+                    You may also use the
+                    <a href="motor-full-load-current.html">Motor Full-Load Current Calculator</a>,
+                    <a href="single-phase-power.html">Single-Phase Power Calculator</a>,
+                    or
+                    <a href="three-phase-power.html">Three-Phase Power Calculator</a>.
+                </p>
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+    <footer class="footer">
+
+        <div class="container footer-top">
+
+            <div>
+
+                <a href="../index.html" class="logo">
+
+                    <span class="logo-icon">
+                        ⚡
+                    </span>
+
+                    <span>
+                        EE Tools
+                    </span>
+
+                </a>
+
+                <p>
+                    Free electrical engineering calculators and resources.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="container footer-bottom">
+
+            <span>
+                © 2026 EE Tools. All rights reserved.
+            </span>
+
+            <span>
+                Built for electrical engineering.
+            </span>
+
+        </div>
+
+    </footer>
+
+
+    <script>
+
+
+        function formatNumber(number) {
+
+            if (!Number.isFinite(number)) {
+                return "—";
+            }
+
+            if (
+                Math.abs(number) >= 1000000 ||
+                (
+                    Math.abs(number) > 0 &&
+                    Math.abs(number) < 0.001
+                )
+            ) {
+
+                return number.toExponential(4);
+
+            }
+
+            return Number(
+                number.toFixed(3)
+            ).toLocaleString();
+
+        }
+
+
+        function formatMoney(number) {
+
+            if (!Number.isFinite(number)) {
+                return "—";
+            }
+
+            return "$" +
+                number.toLocaleString(
+                    undefined,
+                    {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }
+                );
+
+        }
+
+
+        function updatePowerUnit() {
+
+            const powerUnit =
+                document.getElementById(
+                    "powerUnit"
+                ).value;
+
+
+            const display =
+                powerUnit === "w"
+                    ? "W"
+                    : "kW";
+
+
+            document.getElementById(
+                "powerUnitDisplay"
+            ).textContent =
+                display;
+
+
+            document.getElementById(
+                "powerInputUnit"
+            ).textContent =
+                display;
+
+        }
+
+
+        function showError(message) {
+
+            const errorMessage =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+
+            const resultBox =
+                document.getElementById(
+                    "resultBox"
+                );
+
+
+            resultBox.classList.remove(
+                "show"
+            );
+
+
+            errorMessage.textContent =
+                message;
+
+
+            errorMessage.classList.add(
+                "show"
+            );
+
+        }
+
+
+        function calculateEnergyCost() {
+
+
+            const powerUnit =
+                document.getElementById(
+                    "powerUnit"
+                ).value;
+
+
+            const powerText =
+                document.getElementById(
+                    "power"
+                ).value.trim();
+
+
+            const hoursText =
+                document.getElementById(
+                    "hoursPerDay"
+                ).value.trim();
+
+
+            const daysText =
+                document.getElementById(
+                    "daysPerMonth"
+                ).value.trim();
+
+
+            const rateText =
+                document.getElementById(
+                    "rate"
+                ).value.trim();
+
+
+            const quantityText =
+                document.getElementById(
+                    "quantity"
+                ).value.trim();
+
+
+            const errorMessage =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+
+            const resultBox =
+                document.getElementById(
+                    "resultBox"
+                );
+
+
+            errorMessage.classList.remove(
+                "show"
+            );
+
+            errorMessage.textContent = "";
+
+            resultBox.classList.remove(
+                "show"
+            );
+
+
+            if (
+                powerText === "" ||
+                hoursText === "" ||
+                daysText === "" ||
+                rateText === "" ||
+                quantityText === ""
+            ) {
+
+                showError(
+                    "Please enter power, operating hours, operating days, electricity rate, and quantity."
+                );
+
+                return;
+
+            }
+
+
+            const power =
+                Number(
+                    powerText
+                );
+
+
+            const hoursPerDay =
+                Number(
+                    hoursText
+                );
+
+
+            const daysPerMonth =
+                Number(
+                    daysText
+                );
+
+
+            const rate =
+                Number(
+                    rateText
+                );
+
+
+            const quantity =
+                Number(
+                    quantityText
+                );
+
+
+            if (
+                !Number.isFinite(power) ||
+                !Number.isFinite(hoursPerDay) ||
+                !Number.isFinite(daysPerMonth) ||
+                !Number.isFinite(rate) ||
+                !Number.isFinite(quantity)
+            ) {
+
+                showError(
+                    "Please enter valid numeric values."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                power <= 0
+            ) {
+
+                showError(
+                    "Equipment power must be greater than zero."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                hoursPerDay <= 0 ||
+                hoursPerDay > 24
+            ) {
+
+                showError(
+                    "Operating time must be greater than 0 and no more than 24 hours per day."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                daysPerMonth < 1 ||
+                daysPerMonth > 31 ||
+                !Number.isInteger(daysPerMonth)
+            ) {
+
+                showError(
+                    "Operating days must be a whole number between 1 and 31."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                rate < 0
+            ) {
+
+                showError(
+                    "Electricity rate cannot be negative."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                quantity < 1 ||
+                !Number.isInteger(quantity)
+            ) {
+
+                showError(
+                    "Number of devices must be a whole number greater than or equal to 1."
+                );
+
+                return;
+
+            }
+
+
+            let powerKW;
+
+
+            if (
+                powerUnit === "w"
+            ) {
+
+                powerKW =
+                    power /
+                    1000;
+
+            } else {
+
+                powerKW =
+                    power;
+
+            }
+
+
+            const totalPowerKW =
+                powerKW *
+                quantity;
+
+
+            const dailyEnergy =
+                totalPowerKW *
+                hoursPerDay;
+
+
+            const monthlyEnergy =
+                dailyEnergy *
+                daysPerMonth;
+
+
+            /*
+                Yearly estimate assumes that
+                the same monthly operating
+                pattern occurs for 12 months.
+            */
+
+            const yearlyEnergy =
+                monthlyEnergy *
+                12;
+
+
+            const dailyCost =
+                dailyEnergy *
+                rate;
+
+
+            const monthlyCost =
+                monthlyEnergy *
+                rate;
+
+
+            const yearlyCost =
+                yearlyEnergy *
+                rate;
+
+
+            if (
+                !Number.isFinite(totalPowerKW) ||
+                !Number.isFinite(dailyEnergy) ||
+                !Number.isFinite(monthlyEnergy) ||
+                !Number.isFinite(yearlyEnergy) ||
+                !Number.isFinite(dailyCost) ||
+                !Number.isFinite(monthlyCost) ||
+                !Number.isFinite(yearlyCost)
+            ) {
+
+                showError(
+                    "The entered values did not produce a valid finite result."
+                );
+
+                return;
+
+            }
+
+
+            document.getElementById(
+                "totalPowerResult"
+            ).textContent =
+                formatNumber(
+                    totalPowerKW
+                ) +
+                " kW";
+
+
+            document.getElementById(
+                "dailyEnergyResult"
+            ).textContent =
+                formatNumber(
+                    dailyEnergy
+                ) +
+                " kWh";
+
+
+            document.getElementById(
+                "monthlyEnergyResult"
+            ).textContent =
+                formatNumber(
+                    monthlyEnergy
+                ) +
+                " kWh";
+
+
+            document.getElementById(
+                "yearlyEnergyResult"
+            ).textContent =
+                formatNumber(
+                    yearlyEnergy
+                ) +
+                " kWh";
+
+
+            document.getElementById(
+                "dailyCostResult"
+            ).textContent =
+                formatMoney(
+                    dailyCost
+                );
+
+
+            document.getElementById(
+                "monthlyCostResult"
+            ).textContent =
+                formatMoney(
+                    monthlyCost
+                );
+
+
+            document.getElementById(
+                "yearlyCostResult"
+            ).textContent =
+                formatMoney(
+                    yearlyCost
+                );
+
+
+            document.getElementById(
+                "rateResult"
+            ).textContent =
+                formatMoney(
+                    rate
+                ) +
+                "/kWh";
+
+
+            document.getElementById(
+                "monthlyCostHighlight"
+            ).textContent =
+                formatMoney(
+                    monthlyCost
+                );
+
+
+            document.getElementById(
+                "costDescription"
+            ).textContent =
+                "Estimated for " +
+                quantity +
+                (
+                    quantity === 1
+                        ? " device operating "
+                        : " devices operating "
+                ) +
+                formatNumber(
+                    hoursPerDay
+                ) +
+                " hours per day for " +
+                daysPerMonth +
+                " days per month.";
+
+
+            resultBox.classList.add(
+                "show"
+            );
+
+        }
+
+
+        function resetCalculator() {
+
+
+            document.getElementById(
+                "powerUnit"
+            ).value =
+                "w";
+
+
+            document.getElementById(
+                "power"
+            ).value =
+                "";
+
+
+            document.getElementById(
+                "hoursPerDay"
+            ).value =
+                "";
+
+
+            document.getElementById(
+                "daysPerMonth"
+            ).value =
+                "";
+
+
+            document.getElementById(
+                "rate"
+            ).value =
+                "";
+
+
+            document.getElementById(
+                "quantity"
+            ).value =
+                "1";
+
+
+            updatePowerUnit();
+
+
+            document.getElementById(
+                "resultBox"
+            ).classList.remove(
+                "show"
+            );
+
+
+            const errorMessage =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+
+            errorMessage.classList.remove(
+                "show"
+            );
+
+            errorMessage.textContent = "";
+
+
+            document.getElementById(
+                "totalPowerResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "dailyEnergyResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "monthlyEnergyResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "yearlyEnergyResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "dailyCostResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "monthlyCostResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "yearlyCostResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "rateResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "monthlyCostHighlight"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "costDescription"
+            ).textContent = "";
+
+        }
+
+
+        updatePowerUnit();
+
+
+    </script>
+
+
+</body>
+
+</html>

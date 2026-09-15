@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ee-tools.eetools.workers.dev/sitemap.xml

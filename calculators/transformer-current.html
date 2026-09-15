@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+        content="Free transformer current calculator to calculate primary and secondary full-load current for single-phase and three-phase transformers using kVA and voltage ratings.">
+
+    <title>Transformer Current Calculator – Primary & Secondary Amps | EE Tools</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .calculator-page {
+            background: #f7f9fc;
+            min-height: 100vh;
+        }
+
+        .calculator-hero {
+            padding: 80px 20px 50px;
+            text-align: center;
+        }
+
+        .calculator-label {
+            display: inline-block;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #2563eb;
+            margin-bottom: 15px;
+        }
+
+        .calculator-hero h1 {
+            font-size: clamp(36px, 5vw, 56px);
+            margin: 0 0 18px;
+        }
+
+        .calculator-hero p {
+            max-width: 720px;
+            margin: 0 auto;
+            font-size: 18px;
+            line-height: 1.7;
+            color: #64748b;
+        }
+
+        .calculator-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px 80px;
+        }
+
+        .calculator-box {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 15px 50px rgba(15, 23, 42, 0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .calculator-box h2 {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+        .calculator-box-intro {
+            color: #64748b;
+            margin-bottom: 30px;
+            line-height: 1.7;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1e293b;
+        }
+
+        .input-description {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: stretch;
+        }
+
+        .input-wrapper input,
+        .input-wrapper select {
+            flex: 1;
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px 0 0 10px;
+            font-size: 16px;
+            outline: none;
+            background: white;
+            color: #0f172a;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-wrapper select {
+            cursor: pointer;
+        }
+
+        .input-wrapper input:focus,
+        .input-wrapper select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .unit {
+            min-width: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-left: none;
+            border-radius: 0 10px 10px 0;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .calc-button,
+        .reset-button {
+            border: none;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .calc-button {
+            background: #2563eb;
+            color: white;
+        }
+
+        .reset-button {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .calc-button:hover,
+        .reset-button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .error-message {
+            display: none;
+            margin-top: 15px;
+            padding: 12px 15px;
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .result-box {
+            margin-top: 30px;
+            padding: 25px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 14px;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-box h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #dbeafe;
+        }
+
+        .result-item span {
+            display: block;
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 7px;
+        }
+
+        .result-item strong {
+            font-size: 22px;
+            color: #0f172a;
+        }
+
+        .result-highlight {
+            margin-top: 20px;
+            padding: 20px;
+            background: #0f172a;
+            color: white;
+            border-radius: 12px;
+        }
+
+        .result-highlight span {
+            display: block;
+            color: #cbd5e1;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .result-highlight strong {
+            font-size: 30px;
+        }
+
+        .result-highlight p {
+            color: #cbd5e1;
+            margin: 10px 0 0;
+            line-height: 1.7;
+        }
+
+        .formula-box {
+            margin-top: 30px;
+            padding: 25px;
+            background: #0f172a;
+            color: white;
+            border-radius: 14px;
+        }
+
+        .formula-box h3 {
+            margin-top: 0;
+        }
+
+        .formula {
+            font-size: 21px;
+            font-weight: 700;
+            margin: 12px 0;
+        }
+
+        .formula-description {
+            color: #cbd5e1;
+            line-height: 1.7;
+        }
+
+        .info-section {
+            margin-top: 40px;
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .info-section h2 {
+            margin-top: 0;
+        }
+
+        .info-section p {
+            color: #475569;
+            line-height: 1.8;
+        }
+
+        .formula-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .formula-table th,
+        .formula-table td {
+            padding: 14px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .formula-table th {
+            background: #f8fafc;
+        }
+
+        @media (max-width: 700px) {
+
+            .calculator-box {
+                padding: 22px;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .calc-button,
+            .reset-button {
+                width: 100%;
+            }
+
+            .calculator-hero {
+                padding-top: 50px;
+            }
+
+        }
+    </style>
+
+</head>
+
+
+<body class="calculator-page">
+
+
+    <header class="header">
+
+        <div class="container nav-container">
+
+            <a href="../index.html" class="logo">
+                <span class="logo-icon">⚡</span>
+                <span>EE Tools</span>
+            </a>
+
+            <nav class="navigation">
+
+                <a href="../index.html#calculators">
+                    Calculators
+                </a>
+
+                <a href="../index.html#categories">
+                    Categories
+                </a>
+
+                <a href="../index.html#resources">
+                    Resources
+                </a>
+
+                <a href="../index.html#about">
+                    About
+                </a>
+
+            </nav>
+
+            <a href="../index.html#calculators" class="nav-button">
+                All Tools
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <main>
+
+
+        <section class="calculator-hero">
+
+            <div class="calculator-label">
+                TRANSFORMERS
+            </div>
+
+            <h1>
+                Transformer Current Calculator
+            </h1>
+
+            <p>
+                Calculate primary and secondary full-load current
+                for single-phase and three-phase transformers.
+            </p>
+
+        </section>
+
+
+        <section class="calculator-container">
+
+
+            <div class="calculator-box">
+
+
+                <h2>
+                    Enter transformer information
+                </h2>
+
+
+                <p class="calculator-box-intro">
+                    Enter the transformer kVA rating, primary voltage,
+                    secondary voltage, and phase configuration to calculate
+                    rated full-load current on both sides.
+                </p>
+
+
+                <div class="input-grid">
+
+
+                    <div class="input-group">
+
+                        <label for="phase">
+                            Transformer Phase
+                        </label>
+
+                        <div class="input-description">
+                            Select single-phase or three-phase
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <select id="phase">
+
+                                <option value="single" selected>
+                                    Single Phase
+                                </option>
+
+                                <option value="three">
+                                    Three Phase
+                                </option>
+
+                            </select>
+
+                            <span class="unit">
+                                AC
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="kva">
+                            Transformer Rating
+                        </label>
+
+                        <div class="input-description">
+                            Transformer apparent-power rating
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="kva" placeholder="Example: 75" step="any" min="0">
+
+                            <span class="unit">
+                                kVA
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="primaryVoltage">
+                            Primary Voltage
+                        </label>
+
+                        <div class="input-description">
+                            Rated primary winding voltage
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="primaryVoltage" placeholder="Example: 480" step="any" min="0">
+
+                            <span class="unit">
+                                V
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="secondaryVoltage">
+                            Secondary Voltage
+                        </label>
+
+                        <div class="input-description">
+                            Rated secondary winding voltage
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="secondaryVoltage" placeholder="Example: 208" step="any" min="0">
+
+                            <span class="unit">
+                                V
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <div id="errorMessage" class="error-message" role="alert">
+                </div>
+
+
+                <div class="button-row">
+
+                    <button type="button" class="calc-button" onclick="calculateTransformerCurrent()">
+
+                        Calculate
+
+                    </button>
+
+
+                    <button type="button" class="reset-button" onclick="resetCalculator()">
+
+                        Reset
+
+                    </button>
+
+                </div>
+
+
+                <div id="resultBox" class="result-box" aria-live="polite">
+
+                    <h3>
+                        Calculated Results
+                    </h3>
+
+
+                    <div class="results-grid">
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Primary Full-Load Current
+                            </span>
+
+                            <strong id="primaryCurrentResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Secondary Full-Load Current
+                            </span>
+
+                            <strong id="secondaryCurrentResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Transformer Rating
+                            </span>
+
+                            <strong id="kvaResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Phase Configuration
+                            </span>
+
+                            <strong id="phaseResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Primary Voltage
+                            </span>
+
+                            <strong id="primaryVoltageResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Secondary Voltage
+                            </span>
+
+                            <strong id="secondaryVoltageResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="result-highlight">
+
+                        <span>
+                            Transformer Voltage Ratio
+                        </span>
+
+                        <strong id="ratioResult">
+                            —
+                        </strong>
+
+                        <p id="ratioDescription">
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="formula-box">
+
+                    <h3>
+                        Transformer Current Formulas
+                    </h3>
+
+                    <div class="formula">
+                        Single Phase:
+                        I = (kVA × 1000) ÷ V
+                    </div>
+
+                    <div class="formula">
+                        Three Phase:
+                        I = (kVA × 1000) ÷ (√3 × V)
+                    </div>
+
+                    <div class="formula-description">
+                        I is rated full-load current in amperes, kVA is the
+                        transformer apparent-power rating, and V is the rated
+                        winding voltage. For three-phase transformers, V is the
+                        rated line-to-line voltage.
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Understanding transformer current
+                </h2>
+
+                <p>
+                    A transformer transfers electrical power between its
+                    primary and secondary windings while changing voltage
+                    and current levels.
+                </p>
+
+                <p>
+                    For approximately the same apparent power, a lower-voltage
+                    winding carries more current than a higher-voltage winding.
+                </p>
+
+                <p>
+                    Rated full-load current can be calculated from transformer
+                    kVA and rated winding voltage.
+                </p>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Transformer current formulas
+                </h2>
+
+
+                <table class="formula-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Transformer Type
+                            </th>
+
+                            <th>
+                                Formula
+                            </th>
+
+                            <th>
+                                Current Unit
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        <tr>
+
+                            <td>
+                                Single Phase
+                            </td>
+
+                            <td>
+                                I = (kVA × 1000) ÷ V
+                            </td>
+
+                            <td>
+                                A
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Three Phase
+                            </td>
+
+                            <td>
+                                I = (kVA × 1000) ÷ (√3 × V)
+                            </td>
+
+                            <td>
+                                A
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Voltage Ratio
+                            </td>
+
+                            <td>
+                                Ratio = Vprimary ÷ Vsecondary
+                            </td>
+
+                            <td>
+                                Ratio
+                            </td>
+
+                        </tr>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Example calculation
+                </h2>
+
+                <p>
+                    Consider a <strong>75 kVA three-phase transformer</strong>
+                    with a <strong>480 V primary</strong> and
+                    <strong>208 V secondary</strong>.
+                </p>
+
+                <p>
+                    Primary current:
+                    <strong>
+                        75,000 ÷ (√3 × 480) ≈ 90.211 A
+                    </strong>.
+                </p>
+
+                <p>
+                    Secondary current:
+                    <strong>
+                        75,000 ÷ (√3 × 208) ≈ 208.179 A
+                    </strong>.
+                </p>
+
+                <p>
+                    The voltage ratio is approximately
+                    <strong>2.308 : 1</strong>, so this is a step-down transformer.
+                </p>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Engineering considerations
+                </h2>
+
+                <p>
+                    These calculations use the transformer nameplate kVA rating
+                    and rated voltages to determine nominal full-load current.
+                </p>
+
+                <p>
+                    Actual equipment and conductor design may also require
+                    consideration of transformer impedance, inrush current,
+                    temperature rise, efficiency, conductor ampacity, overcurrent
+                    protection, grounding, harmonics, installation conditions,
+                    and applicable electrical codes.
+                </p>
+
+                <p>
+                    Transformer nameplate information and manufacturer
+                    documentation should be used when available.
+                </p>
+
+            </div>
+
+
+            <div class="info-section">
+
+                <h2>
+                    Related calculators
+                </h2>
+
+                <p>
+                    You may also use the
+                    <a href="three-phase-power.html">Three-Phase Power Calculator</a>,
+                    <a href="kva-kw-calculator.html">kW to kVA Calculator</a>,
+                    or
+                    <a href="cable-sizing.html">Cable Sizing Calculator</a>.
+                </p>
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+    <footer class="footer">
+
+        <div class="container footer-top">
+
+            <div>
+
+                <a href="../index.html" class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <span>EE Tools</span>
+                </a>
+
+                <p>
+                    Free electrical engineering calculators and resources.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="container footer-bottom">
+
+            <span>
+                © 2026 EE Tools. All rights reserved.
+            </span>
+
+            <span>
+                Built for electrical engineering.
+            </span>
+
+        </div>
+
+    </footer>
+
+
+    <script>
+
+
+        function formatNumber(number) {
+
+            if (!Number.isFinite(number)) {
+                return "—";
+            }
+
+            if (
+                Math.abs(number) >= 1000000 ||
+                (
+                    Math.abs(number) > 0 &&
+                    Math.abs(number) < 0.001
+                )
+            ) {
+
+                return number.toExponential(4);
+
+            }
+
+            return Number(
+                number.toFixed(3)
+            ).toLocaleString();
+
+        }
+
+
+        function showError(message) {
+
+            const errorMessage =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+            const resultBox =
+                document.getElementById(
+                    "resultBox"
+                );
+
+
+            resultBox.classList.remove(
+                "show"
+            );
+
+
+            errorMessage.textContent =
+                message;
+
+
+            errorMessage.classList.add(
+                "show"
+            );
+
+        }
+
+
+        function calculateTransformerCurrent() {
+
+
+            const phase =
+                document.getElementById(
+                    "phase"
+                ).value;
+
+
+            const kvaText =
+                document.getElementById(
+                    "kva"
+                ).value.trim();
+
+
+            const primaryVoltageText =
+                document.getElementById(
+                    "primaryVoltage"
+                ).value.trim();
+
+
+            const secondaryVoltageText =
+                document.getElementById(
+                    "secondaryVoltage"
+                ).value.trim();
+
+
+            const errorMessage =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+
+            const resultBox =
+                document.getElementById(
+                    "resultBox"
+                );
+
+
+            errorMessage.classList.remove(
+                "show"
+            );
+
+            errorMessage.textContent = "";
+
+            resultBox.classList.remove(
+                "show"
+            );
+
+
+            if (
+                kvaText === "" ||
+                primaryVoltageText === "" ||
+                secondaryVoltageText === ""
+            ) {
+
+                showError(
+                    "Please enter the transformer kVA rating, primary voltage, and secondary voltage."
+                );
+
+                return;
+
+            }
+
+
+            const kva =
+                Number(
+                    kvaText
+                );
+
+
+            const primaryVoltage =
+                Number(
+                    primaryVoltageText
+                );
+
+
+            const secondaryVoltage =
+                Number(
+                    secondaryVoltageText
+                );
+
+
+            if (
+                !Number.isFinite(kva) ||
+                !Number.isFinite(primaryVoltage) ||
+                !Number.isFinite(secondaryVoltage)
+            ) {
+
+                showError(
+                    "Please enter valid numeric transformer values."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                kva <= 0 ||
+                primaryVoltage <= 0 ||
+                secondaryVoltage <= 0
+            ) {
+
+                showError(
+                    "Transformer kVA and voltage values must be greater than zero."
+                );
+
+                return;
+
+            }
+
+
+            let primaryCurrent;
+            let secondaryCurrent;
+
+
+            if (
+                phase === "three"
+            ) {
+
+                primaryCurrent =
+                    (
+                        kva *
+                        1000
+                    ) /
+                    (
+                        Math.sqrt(3) *
+                        primaryVoltage
+                    );
+
+
+                secondaryCurrent =
+                    (
+                        kva *
+                        1000
+                    ) /
+                    (
+                        Math.sqrt(3) *
+                        secondaryVoltage
+                    );
+
+            } else {
+
+                primaryCurrent =
+                    (
+                        kva *
+                        1000
+                    ) /
+                    primaryVoltage;
+
+
+                secondaryCurrent =
+                    (
+                        kva *
+                        1000
+                    ) /
+                    secondaryVoltage;
+
+            }
+
+
+            const voltageRatio =
+                primaryVoltage /
+                secondaryVoltage;
+
+
+            if (
+                !Number.isFinite(primaryCurrent) ||
+                !Number.isFinite(secondaryCurrent) ||
+                !Number.isFinite(voltageRatio)
+            ) {
+
+                showError(
+                    "The entered values did not produce a valid finite result."
+                );
+
+                return;
+
+            }
+
+
+            document.getElementById(
+                "primaryCurrentResult"
+            ).textContent =
+                formatNumber(
+                    primaryCurrent
+                ) +
+                " A";
+
+
+            document.getElementById(
+                "secondaryCurrentResult"
+            ).textContent =
+                formatNumber(
+                    secondaryCurrent
+                ) +
+                " A";
+
+
+            document.getElementById(
+                "kvaResult"
+            ).textContent =
+                formatNumber(
+                    kva
+                ) +
+                " kVA";
+
+
+            document.getElementById(
+                "phaseResult"
+            ).textContent =
+                phase === "three"
+                    ? "Three Phase"
+                    : "Single Phase";
+
+
+            document.getElementById(
+                "primaryVoltageResult"
+            ).textContent =
+                formatNumber(
+                    primaryVoltage
+                ) +
+                " V";
+
+
+            document.getElementById(
+                "secondaryVoltageResult"
+            ).textContent =
+                formatNumber(
+                    secondaryVoltage
+                ) +
+                " V";
+
+
+            document.getElementById(
+                "ratioResult"
+            ).textContent =
+                formatNumber(
+                    voltageRatio
+                ) +
+                " : 1";
+
+
+            const ratioDescription =
+                document.getElementById(
+                    "ratioDescription"
+                );
+
+
+            if (
+                primaryVoltage > secondaryVoltage
+            ) {
+
+                ratioDescription.textContent =
+                    "This is a step-down transformer because the secondary voltage is lower than the primary voltage.";
+
+            } else if (
+                primaryVoltage < secondaryVoltage
+            ) {
+
+                ratioDescription.textContent =
+                    "This is a step-up transformer because the secondary voltage is higher than the primary voltage.";
+
+            } else {
+
+                ratioDescription.textContent =
+                    "The primary and secondary voltage ratings are equal, giving a 1:1 voltage ratio.";
+
+            }
+
+
+            resultBox.classList.add(
+                "show"
+            );
+
+        }
+
+
+        function resetCalculator() {
+
+
+            document.getElementById(
+                "phase"
+            ).value =
+                "single";
+
+
+            document.getElementById(
+                "kva"
+            ).value =
+                "";
+
+
+            document.getElementById(
+                "primaryVoltage"
+            ).value =
+                "";
+
+
+            document.getElementById(
+                "secondaryVoltage"
+            ).value =
+                "";
+
+
+            document.getElementById(
+                "resultBox"
+            ).classList.remove(
+                "show"
+            );
+
+
+            const errorMessage =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+
+            errorMessage.classList.remove(
+                "show"
+            );
+
+            errorMessage.textContent = "";
+
+
+            document.getElementById(
+                "primaryCurrentResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "secondaryCurrentResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "kvaResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "phaseResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "primaryVoltageResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "secondaryVoltageResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "ratioResult"
+            ).textContent = "—";
+
+
+            document.getElementById(
+                "ratioDescription"
+            ).textContent = "";
+
+
+        }
+
+
+    </script>
+
+
+</body>
+
+</html>

@@ -69,6 +69,12 @@
     </url>
 
     <url>
+    <loc>https://ee-tools.eetools.workers.dev/calculators/electrical-power.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+</url>
+
+    <url>
         <loc>https://ee-tools.eetools.workers.dev/contact.html</loc>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>

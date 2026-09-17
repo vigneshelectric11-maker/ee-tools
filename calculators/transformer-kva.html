@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+        content="Free transformer kVA calculator. Calculate single-phase or three-phase transformer apparent power in VA, kVA, and MVA from voltage and current.">
+
+    <title>Transformer kVA Calculator | Single & Three Phase | EE Tools</title>
+
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+
+    <link rel="canonical" href="https://ee-tools.eetools.workers.dev/calculators/transformer-kva.html">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "EE Tools",
+          "item": "https://ee-tools.eetools.workers.dev/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Calculators",
+          "item": "https://ee-tools.eetools.workers.dev/#calculators"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Transformer kVA Calculator",
+          "item": "https://ee-tools.eetools.workers.dev/calculators/transformer-kva.html"
+        }
+      ]
+    }
+    </script>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .calculator-page {
+            background: #f7f9fc;
+            min-height: 100vh;
+        }
+
+        .calculator-hero {
+            padding: 80px 20px 50px;
+            text-align: center;
+        }
+
+        .calculator-label {
+            display: block;
+            margin-bottom: 12px;
+            color: #2563eb;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .calculator-hero h1 {
+            margin: 0 0 18px;
+            font-size: clamp(36px, 5vw, 56px);
+        }
+
+        .calculator-hero p {
+            max-width: 720px;
+            margin: 0 auto;
+            color: #64748b;
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
+        .calculator-container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 0 20px 80px;
+        }
+
+        .calculator-box {
+            padding: 35px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(15, 23, 42, 0.08);
+        }
+
+        .calculator-box-intro {
+            margin: 0 0 30px;
+            color: #64748b;
+            line-height: 1.7;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            margin-bottom: 7px;
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        .input-description {
+            min-height: 36px;
+            margin-bottom: 8px;
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .input-wrapper {
+            display: flex;
+        }
+
+        .input-wrapper input,
+        .input-wrapper select {
+            width: 100%;
+            min-width: 0;
+            padding: 14px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px 0 0 10px;
+            outline: none;
+            background: #ffffff;
+            color: #0f172a;
+            font-size: 16px;
+        }
+
+        .input-wrapper select.full-control {
+            border-radius: 10px;
+        }
+
+        .input-wrapper input:focus,
+        .input-wrapper select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+        }
+
+        .unit {
+            display: flex;
+            min-width: 70px;
+            align-items: center;
+            justify-content: center;
+            padding: 0 12px;
+            border: 1px solid #cbd5e1;
+            border-left: none;
+            border-radius: 0 10px 10px 0;
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 700;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .calc-button,
+        .reset-button {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            transition: opacity .2s ease, transform .2s ease;
+        }
+
+        .calc-button {
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        .reset-button {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .calc-button:hover,
+        .reset-button:hover {
+            opacity: .9;
+            transform: translateY(-1px);
+        }
+
+        .error-message {
+            display: none;
+            margin-top: 20px;
+            padding: 15px 18px;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            background: #fef2f2;
+            color: #b91c1c;
+            line-height: 1.6;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            border: 1px solid #bfdbfe;
+            border-radius: 14px;
+            background: #eff6ff;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-box h2 {
+            margin-top: 0;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .result-item {
+            padding: 20px;
+            border: 1px solid #dbeafe;
+            border-radius: 12px;
+            background: #ffffff;
+        }
+
+        .result-item span {
+            display: block;
+            margin-bottom: 7px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .result-item strong {
+            color: #0f172a;
+            font-size: 22px;
+        }
+
+        .result-highlight {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            background: #0f172a;
+            color: #ffffff;
+        }
+
+        .result-highlight span {
+            display: block;
+            margin-bottom: 5px;
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+        .result-highlight strong {
+            font-size: 30px;
+        }
+
+        .formula-box {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 14px;
+            background: #0f172a;
+            color: #ffffff;
+        }
+
+        .formula-box h2 {
+            margin-top: 0;
+        }
+
+        .formula {
+            margin: 12px 0;
+            font-size: 21px;
+            font-weight: 700;
+        }
+
+        .formula-description {
+            margin-bottom: 0;
+            color: #cbd5e1;
+            line-height: 1.7;
+        }
+
+        .info-section {
+            margin-top: 40px;
+            padding: 35px;
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            background: #ffffff;
+        }
+
+        .info-section h2 {
+            margin-top: 0;
+        }
+
+        .info-section p,
+        .info-section li {
+            color: #475569;
+            line-height: 1.8;
+        }
+
+        .formula-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        .formula-table th,
+        .formula-table td {
+            padding: 14px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .formula-table th {
+            background: #f8fafc;
+        }
+
+        .related-tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .related-tools a {
+            padding: 10px 14px;
+            border: 1px solid #dbeafe;
+            border-radius: 9px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .related-tools a:hover {
+            background: #dbeafe;
+        }
+
+        @media (max-width: 700px) {
+
+            .calculator-hero {
+                padding-top: 50px;
+            }
+
+            .calculator-box,
+            .info-section {
+                padding: 22px;
+            }
+
+            .input-grid,
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .input-description {
+                min-height: 0;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .calc-button,
+            .reset-button {
+                width: 100%;
+            }
+
+        }
+    </style>
+
+</head>
+
+
+<body class="calculator-page">
+
+
+    <header class="header">
+
+        <div class="container nav-container">
+
+            <a href="../index.html" class="logo">
+                <span class="logo-icon">⚡</span>
+                <span>EE Tools</span>
+            </a>
+
+            <nav class="navigation" aria-label="Main navigation">
+
+                <a href="../index.html#calculators">
+                    Calculators
+                </a>
+
+                <a href="../index.html#categories">
+                    Categories
+                </a>
+
+                <a href="../index.html#resources">
+                    Resources
+                </a>
+
+                <a href="../index.html#about">
+                    About
+                </a>
+
+            </nav>
+
+            <a href="../index.html#calculators" class="nav-button">
+
+                All Tools
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <main>
+
+
+        <section class="calculator-hero">
+
+            <span class="calculator-label">
+                TRANSFORMERS
+            </span>
+
+            <h1>
+                Transformer kVA Calculator
+            </h1>
+
+            <p>
+                Calculate transformer apparent power in VA, kVA, and MVA
+                from voltage and current for single-phase and balanced
+                three-phase systems.
+            </p>
+
+        </section>
+
+
+        <div class="calculator-container">
+
+
+            <section class="calculator-box">
+
+                <p class="calculator-box-intro">
+                    Select the transformer phase configuration and enter the rated
+                    voltage and current. For three-phase calculations, use the
+                    line-to-line voltage and line current.
+                </p>
+
+
+                <div class="input-grid">
+
+
+                    <div class="input-group">
+
+                        <label for="phase">
+                            Phase
+                        </label>
+
+                        <span class="input-description">
+                            Select single-phase or three-phase.
+                        </span>
+
+                        <div class="input-wrapper">
+
+                            <select id="phase" class="full-control">
+
+                                <option value="single">
+                                    Single-Phase
+                                </option>
+
+                                <option value="three">
+                                    Three-Phase
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="voltage">
+                            Voltage
+                        </label>
+
+                        <span class="input-description" id="voltageDescription">
+                            Enter the single-phase RMS voltage.
+                        </span>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="voltage" min="0" step="any" placeholder="Example: 240"
+                                inputmode="decimal">
+
+                            <span class="unit">
+                                V
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="current">
+                            Current
+                        </label>
+
+                        <span class="input-description">
+                            Enter the transformer current.
+                        </span>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="current" min="0" step="any" placeholder="Example: 100"
+                                inputmode="decimal">
+
+                            <span class="unit">
+                                A
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="button-row">
+
+                    <button type="button" class="calc-button" id="calculateButton">
+
+                        Calculate kVA
+
+                    </button>
+
+                    <button type="button" class="reset-button" id="resetButton">
+
+                        Reset
+
+                    </button>
+
+                </div>
+
+
+                <div id="errorMessage" class="error-message" role="alert">
+                </div>
+
+
+                <div id="resultBox" class="result-box" aria-live="polite">
+
+                    <h2>
+                        Calculated Results
+                    </h2>
+
+
+                    <div class="results-grid">
+
+                        <div class="result-item">
+
+                            <span>
+                                Apparent Power
+                            </span>
+
+                            <strong id="vaResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Apparent Power
+                            </span>
+
+                            <strong id="mvaResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Voltage
+                            </span>
+
+                            <strong id="voltageResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Current
+                            </span>
+
+                            <strong id="currentInputResult">
+                                —
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="result-highlight">
+
+                        <span>
+                            Transformer Apparent Power
+                        </span>
+
+                        <strong id="kvaResult">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="formula-box">
+
+                    <h2>
+                        Transformer kVA Formula
+                    </h2>
+
+                    <div class="formula" id="formulaDisplay">
+
+                        kVA = V × I ÷ 1000
+
+                    </div>
+
+                    <p class="formula-description" id="formulaDescription">
+
+                        For a single-phase transformer, apparent power equals
+                        voltage multiplied by current, divided by 1,000.
+
+                    </p>
+
+                </div>
+
+
+            </section>
+
+
+            <section class="info-section">
+
+                <h2>
+                    Transformer kVA Formulas
+                </h2>
+
+                <p>
+                    Transformer apparent power is commonly expressed in
+                    kilovolt-amperes (kVA). The required formula depends on
+                    whether the system is single-phase or balanced three-phase.
+                </p>
+
+
+                <table class="formula-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>System</th>
+                            <th>Formula</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+                            <td>Single-Phase</td>
+                            <td>kVA = V × I ÷ 1000</td>
+                        </tr>
+
+                        <tr>
+                            <td>Three-Phase</td>
+                            <td>kVA = √3 × V<sub>LL</sub> × I ÷ 1000</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+
+            <section class="info-section">
+
+                <h2>
+                    How to Calculate Transformer kVA
+                </h2>
+
+                <p>
+                    For a single-phase transformer, multiply the RMS voltage by
+                    the current and divide the result by 1,000.
+                </p>
+
+                <p>
+                    For example, a single-phase transformer operating at
+                    240 V and 100 A has an apparent power of:
+                </p>
+
+                <p>
+                    <strong>
+                        kVA = 240 × 100 ÷ 1000 = 24 kVA
+                    </strong>
+                </p>
+
+                <p>
+                    For a balanced three-phase transformer, multiply the
+                    line-to-line RMS voltage by the line current and by √3,
+                    then divide by 1,000.
+                </p>
+
+            </section>
+
+
+            <section class="info-section">
+
+                <h2>
+                    Example Calculations
+                </h2>
+
+                <p>
+                    <strong>Single-phase example:</strong>
+                    A transformer rated at 240 V and 100 A has an apparent
+                    power of 24 kVA.
+                </p>
+
+                <p>
+                    <strong>Three-phase example:</strong>
+                    A balanced three-phase transformer operating at 480 V
+                    and 100 A has an apparent power of approximately
+                    83.138 kVA.
+                </p>
+
+            </section>
+
+
+            <section class="info-section">
+
+                <h2>
+                    kVA vs kW
+                </h2>
+
+                <p>
+                    kVA represents apparent power, while kW represents real
+                    power. For AC loads, the relationship between the two
+                    includes power factor:
+                </p>
+
+                <p>
+                    <strong>
+                        kW = kVA × Power Factor
+                    </strong>
+                </p>
+
+                <p>
+                    Because transformers are commonly rated according to
+                    apparent power, their nameplate capacity is typically
+                    expressed in VA or kVA rather than kW.
+                </p>
+
+            </section>
+
+
+            <section class="info-section">
+
+                <h2>
+                    Related Electrical Calculators
+                </h2>
+
+                <p>
+                    Use these EE Tools calculators for related transformer,
+                    current, and electrical power calculations.
+                </p>
+
+
+                <div class="related-tools">
+
+                    <a href="transformer-current.html">
+                        Transformer Current
+                    </a>
+
+                    <a href="current-calculator.html">
+                        Current Calculator
+                    </a>
+
+                    <a href="electrical-power.html">
+                        Electrical Power Calculator
+                    </a>
+
+                    <a href="kva-kw-calculator.html">
+                        kW / kVA Calculator
+                    </a>
+
+                    <a href="three-phase-power.html">
+                        Three-Phase Power
+                    </a>
+
+                </div>
+
+            </section>
+
+
+            <section class="info-section">
+
+                <h2>
+                    Engineering Note
+                </h2>
+
+                <p>
+                    This calculator determines apparent power from voltage and
+                    current. Three-phase calculations assume a balanced system
+                    and use line-to-line RMS voltage and line current.
+                </p>
+
+                <p>
+                    Calculated kVA should not automatically be treated as the
+                    required transformer nameplate rating. Transformer selection
+                    may also depend on load characteristics, continuous loading,
+                    starting or inrush current, harmonics, temperature, future
+                    expansion, applicable standards, and manufacturer data.
+                </p>
+
+            </section>
+
+
+        </div>
+
+
+    </main>
+
+
+    <footer class="footer">
+
+        <div class="container footer-top">
+
+            <div>
+
+                <a href="../index.html" class="logo">
+
+                    <span class="logo-icon">
+                        ⚡
+                    </span>
+
+                    <span>
+                        EE Tools
+                    </span>
+
+                </a>
+
+                <p>
+                    Free electrical engineering calculators and resources.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="container footer-bottom">
+
+            <span>
+                © 2026 EE Tools. All rights reserved.
+            </span>
+
+            <span>
+                Built for electrical engineering.
+            </span>
+
+        </div>
+
+    </footer>
+
+
+    <script>
+
+        const phase =
+            document.getElementById("phase");
+
+        const voltage =
+            document.getElementById("voltage");
+
+        const current =
+            document.getElementById("current");
+
+        const voltageDescription =
+            document.getElementById("voltageDescription");
+
+        const calculateButton =
+            document.getElementById("calculateButton");
+
+        const resetButton =
+            document.getElementById("resetButton");
+
+        const errorMessage =
+            document.getElementById("errorMessage");
+
+        const resultBox =
+            document.getElementById("resultBox");
+
+        const vaResult =
+            document.getElementById("vaResult");
+
+        const kvaResult =
+            document.getElementById("kvaResult");
+
+        const mvaResult =
+            document.getElementById("mvaResult");
+
+        const voltageResult =
+            document.getElementById("voltageResult");
+
+        const currentInputResult =
+            document.getElementById("currentInputResult");
+
+        const formulaDisplay =
+            document.getElementById("formulaDisplay");
+
+        const formulaDescription =
+            document.getElementById("formulaDescription");
+
+
+        function updatePhaseInterface() {
+
+            hideError();
+            hideResults();
+
+            if (phase.value === "single") {
+
+                voltageDescription.textContent =
+                    "Enter the single-phase RMS voltage.";
+
+                formulaDisplay.textContent =
+                    "kVA = V × I ÷ 1000";
+
+                formulaDescription.textContent =
+                    "For a single-phase transformer, apparent power equals voltage multiplied by current, divided by 1,000.";
+
+            }
+
+            else {
+
+                voltageDescription.textContent =
+                    "Enter the line-to-line RMS voltage.";
+
+                formulaDisplay.textContent =
+                    "kVA = √3 × VLL × I ÷ 1000";
+
+                formulaDescription.textContent =
+                    "For a balanced three-phase transformer, apparent power equals √3 multiplied by line-to-line RMS voltage and line current, divided by 1,000.";
+
+            }
+
+        }
+
+
+        function calculateKVA() {
+
+            hideError();
+            hideResults();
+
+
+            if (voltage.value.trim() === "" ||
+                current.value.trim() === "") {
+
+                showError(
+                    "Please enter both voltage and current."
+                );
+
+                return;
+
+            }
+
+
+            const v =
+                Number(voltage.value);
+
+            const i =
+                Number(current.value);
+
+
+            if (!Number.isFinite(v) ||
+                !Number.isFinite(i) ||
+                v <= 0 ||
+                i <= 0) {
+
+                showError(
+                    "Voltage and current must be numbers greater than zero."
+                );
+
+                return;
+
+            }
+
+
+            let va;
+
+
+            if (phase.value === "single") {
+
+                va =
+                    v * i;
+
+            }
+
+            else {
+
+                va =
+                    Math.sqrt(3) * v * i;
+
+            }
+
+
+            const kva =
+                va / 1000;
+
+            const mva =
+                va / 1000000;
+
+
+            vaResult.textContent =
+                formatNumber(va) + " VA";
+
+            kvaResult.textContent =
+                formatNumber(kva) + " kVA";
+
+            mvaResult.textContent =
+                formatNumber(mva) + " MVA";
+
+            voltageResult.textContent =
+                formatNumber(v) + " V";
+
+            currentInputResult.textContent =
+                formatNumber(i) + " A";
+
+
+            resultBox.classList.add("show");
+
+        }
+
+
+        function formatNumber(value) {
+
+            if (!Number.isFinite(value)) {
+
+                return "—";
+
+            }
+
+
+            const absoluteValue =
+                Math.abs(value);
+
+
+            if (absoluteValue !== 0 &&
+                (absoluteValue >= 1000000000 ||
+                    absoluteValue < 0.001)) {
+
+                return value.toExponential(3);
+
+            }
+
+
+            return Number(
+                value.toFixed(3)
+            ).toLocaleString(
+                undefined,
+                {
+                    maximumFractionDigits: 3
+                }
+            );
+
+        }
+
+
+        function showError(message) {
+
+            errorMessage.textContent =
+                message;
+
+            errorMessage.classList.add("show");
+
+        }
+
+
+        function hideError() {
+
+            errorMessage.textContent =
+                "";
+
+            errorMessage.classList.remove("show");
+
+        }
+
+
+        function hideResults() {
+
+            resultBox.classList.remove("show");
+
+        }
+
+
+        function resetCalculator() {
+
+            phase.value =
+                "single";
+
+            voltage.value =
+                "";
+
+            current.value =
+                "";
+
+            vaResult.textContent =
+                "—";
+
+            kvaResult.textContent =
+                "—";
+
+            mvaResult.textContent =
+                "—";
+
+            voltageResult.textContent =
+                "—";
+
+            currentInputResult.textContent =
+                "—";
+
+            hideError();
+            hideResults();
+
+            updatePhaseInterface();
+
+            voltage.focus();
+
+        }
+
+
+        phase.addEventListener(
+            "change",
+            updatePhaseInterface
+        );
+
+
+        calculateButton.addEventListener(
+            "click",
+            calculateKVA
+        );
+
+
+        resetButton.addEventListener(
+            "click",
+            resetCalculator
+        );
+
+
+        [
+            voltage,
+            current
+        ].forEach(
+            function (input) {
+
+                input.addEventListener(
+                    "keydown",
+                    function (event) {
+
+                        if (event.key === "Enter") {
+
+                            calculateKVA();
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        updatePhaseInterface();
+
+    </script>
+
+
+</body>
+
+</html>

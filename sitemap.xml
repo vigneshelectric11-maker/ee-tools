@@ -74,6 +74,12 @@
     <priority>0.8</priority>
 </url>
 
+<url>
+    <loc>https://ee-tools.eetools.workers.dev/calculators/current-calculator.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+</url>
+
     <url>
         <loc>https://ee-tools.eetools.workers.dev/contact.html</loc>
         <changefreq>yearly</changefreq>

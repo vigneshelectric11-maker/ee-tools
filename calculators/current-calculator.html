@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+        content="Free electrical current calculator for DC, single-phase AC, and three-phase AC systems. Calculate amps from power, voltage, and power factor.">
+
+    <title>Current Calculator | Calculate Amps from Watts & Voltage | EE Tools</title>
+
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+
+    <link rel="canonical" href="https://ee-tools.eetools.workers.dev/calculators/current-calculator.html">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "EE Tools",
+          "item": "https://ee-tools.eetools.workers.dev/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Calculators",
+          "item": "https://ee-tools.eetools.workers.dev/#calculators"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Current Calculator",
+          "item": "https://ee-tools.eetools.workers.dev/calculators/current-calculator.html"
+        }
+      ]
+    }
+    </script>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .calculator-page {
+            background: #f7f9fc;
+            min-height: 100vh;
+        }
+
+        .calculator-hero {
+            padding: 80px 20px 50px;
+            text-align: center;
+        }
+
+        .calculator-label {
+            display: block;
+            margin-bottom: 12px;
+            color: #2563eb;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .calculator-hero h1 {
+            margin: 0 0 18px;
+            font-size: clamp(36px, 5vw, 56px);
+        }
+
+        .calculator-hero p {
+            max-width: 720px;
+            margin: 0 auto;
+            color: #64748b;
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
+        .calculator-container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 0 20px 80px;
+        }
+
+        .calculator-box {
+            padding: 35px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(15, 23, 42, 0.08);
+        }
+
+        .calculator-box-intro {
+            margin: 0 0 30px;
+            color: #64748b;
+            line-height: 1.7;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            margin-bottom: 7px;
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        .input-description {
+            min-height: 36px;
+            margin-bottom: 8px;
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .input-wrapper {
+            display: flex;
+        }
+
+        .input-wrapper input,
+        .input-wrapper select {
+            width: 100%;
+            min-width: 0;
+            padding: 14px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px 0 0 10px;
+            outline: none;
+            background: #ffffff;
+            color: #0f172a;
+            font-size: 16px;
+        }
+
+        .input-wrapper select.full-control {
+            border-radius: 10px;
+        }
+
+        .input-wrapper input:focus,
+        .input-wrapper select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .unit {
+            display: flex;
+            min-width: 70px;
+            align-items: center;
+            justify-content: center;
+            padding: 0 12px;
+            border: 1px solid #cbd5e1;
+            border-left: none;
+            border-radius: 0 10px 10px 0;
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 700;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .calc-button,
+        .reset-button {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            transition: opacity .2s ease, transform .2s ease;
+        }
+
+        .calc-button {
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        .reset-button {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .calc-button:hover,
+        .reset-button:hover {
+            opacity: .9;
+            transform: translateY(-1px);
+        }
+
+        .error-message {
+            display: none;
+            margin-top: 20px;
+            padding: 15px 18px;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            background: #fef2f2;
+            color: #b91c1c;
+            line-height: 1.6;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            border: 1px solid #bfdbfe;
+            border-radius: 14px;
+            background: #eff6ff;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-box h2 {
+            margin-top: 0;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .result-item {
+            padding: 20px;
+            border: 1px solid #dbeafe;
+            border-radius: 12px;
+            background: #ffffff;
+        }
+
+        .result-item span {
+            display: block;
+            margin-bottom: 7px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .result-item strong {
+            color: #0f172a;
+            font-size: 22px;
+        }
+
+        .result-highlight {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            background: #0f172a;
+            color: #ffffff;
+        }
+
+        .result-highlight span {
+            display: block;
+            margin-bottom: 5px;
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+        .result-highlight strong {
+            font-size: 30px;
+        }
+
+        .formula-box {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 14px;
+            background: #0f172a;
+            color: #ffffff;
+        }
+
+        .formula-box h2 {
+            margin-top: 0;
+        }
+
+        .formula {
+            margin: 12px 0;
+            font-size: 21px;
+            font-weight: 700;
+        }
+
+        .formula-description {
+            margin-bottom: 0;
+            color: #cbd5e1;
+            line-height: 1.7;
+        }
+
+        .info-section {
+            margin-top: 40px;
+            padding: 35px;
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            background: #ffffff;
+        }
+
+        .info-section h2 {
+            margin-top: 0;
+        }
+
+        .info-section p,
+        .info-section li {
+            color: #475569;
+            line-height: 1.8;
+        }
+
+        .formula-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        .formula-table th,
+        .formula-table td {
+            padding: 14px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .formula-table th {
+            background: #f8fafc;
+        }
+
+        .related-tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .related-tools a {
+            padding: 10px 14px;
+            border: 1px solid #dbeafe;
+            border-radius: 9px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .related-tools a:hover {
+            background: #dbeafe;
+        }
+
+        @media (max-width: 700px) {
+
+            .calculator-hero {
+                padding-top: 50px;
+            }
+
+            .calculator-box,
+            .info-section {
+                padding: 22px;
+            }
+
+            .input-grid,
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .input-description {
+                min-height: 0;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .calc-button,
+            .reset-button {
+                width: 100%;
+            }
+
+        }
+    </style>
+</head>
+
+
+<body class="calculator-page">
+
+
+    <header class="header">
+
+        <div class="container nav-container">
+
+            <a href="../index.html" class="logo">
+                <span class="logo-icon">⚡</span>
+                <span>EE Tools</span>
+            </a>
+
+            <nav class="navigation" aria-label="Main navigation">
+                <a href="../index.html#calculators">Calculators</a>
+                <a href="../index.html#categories">Categories</a>
+                <a href="../index.html#resources">Resources</a>
+                <a href="../index.html#about">About</a>
+            </nav>
+
+            <a href="../index.html#calculators" class="nav-button">
+                All Tools
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <main>
+
+
+        <section class="calculator-hero">
+
+            <span class="calculator-label">
+                ELECTRICAL POWER
+            </span>
+
+            <h1>
+                Current Calculator
+            </h1>
+
+            <p>
+                Calculate electrical current in amps for DC, single-phase AC,
+                and balanced three-phase AC systems from power and voltage.
+            </p>
+
+        </section>
+
+
+        <div class="calculator-container">
+
+
+            <section class="calculator-box">
+
+                <p class="calculator-box-intro">
+                    Select the electrical system, enter the load power and voltage,
+                    and provide power factor when calculating AC current.
+                </p>
+
+
+                <div class="input-grid">
+
+
+                    <div class="input-group">
+
+                        <label for="systemType">
+                            Electrical System
+                        </label>
+
+                        <span class="input-description">
+                            Select the type of electrical system.
+                        </span>
+
+                        <div class="input-wrapper">
+
+                            <select id="systemType" class="full-control">
+
+                                <option value="dc">
+                                    DC
+                                </option>
+
+                                <option value="single">
+                                    Single-Phase AC
+                                </option>
+
+                                <option value="three">
+                                    Three-Phase AC
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="power">
+                            Real Power
+                        </label>
+
+                        <span class="input-description">
+                            Enter the real electrical power consumed by the load.
+                        </span>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="power" min="0" step="any" placeholder="Example: 10"
+                                inputmode="decimal">
+
+                            <select id="powerUnit" class="unit" aria-label="Power unit">
+
+                                <option value="kw">
+                                    kW
+                                </option>
+
+                                <option value="w">
+                                    W
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="voltage">
+                            Voltage
+                        </label>
+
+                        <span class="input-description" id="voltageDescription">
+                            Enter the DC system voltage.
+                        </span>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="voltage" min="0" step="any" placeholder="Example: 240"
+                                inputmode="decimal">
+
+                            <span class="unit">
+                                V
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group" id="powerFactorGroup" hidden>
+
+                        <label for="powerFactor">
+                            Power Factor
+                        </label>
+
+                        <span class="input-description">
+                            Enter power factor as a value from 0 to 1.
+                        </span>
+
+                        <div class="input-wrapper">
+
+                            <input type="number" id="powerFactor" min="0" max="1" step="any" placeholder="Example: 0.90"
+                                inputmode="decimal">
+
+                            <span class="unit">
+                                PF
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="button-row">
+
+                    <button type="button" class="calc-button" id="calculateButton">
+
+                        Calculate Current
+
+                    </button>
+
+
+                    <button type="button" class="reset-button" id="resetButton">
+
+                        Reset
+
+                    </button>
+
+                </div>
+
+
+                <div id="errorMessage" class="error-message" role="alert">
+                </div>
+
+
+                <div id="resultBox" class="result-box" aria-live="polite">
+
+
+                    <h2>
+                        Calculated Results
+                    </h2>
+
+
+                    <div class="results-grid">
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Real Power
+                            </span>
+
+                            <strong id="powerResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Voltage
+                            </span>
+
+                            <strong id="voltageResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Power Factor
+                            </span>
+
+                            <strong id="pfResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="result-item">
+
+                            <span>
+                                Electrical System
+                            </span>
+
+                            <strong id="systemResult">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="result-highlight">
+
+                        <span>
+                            Calculated Current
+                        </span>
+
+                        <strong id="currentResult">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="formula-box">
+
+                    <h2>
+                        Current Formula
+                    </h2>
+
+                    <div class="formula" id="formulaDisplay">
+
+                        I = P ÷ V
+
+                    </div>
+
+                    <p class="formula-description" id="formulaDescription">
+
+                        For DC systems, current equals power divided by voltage.
+
+                    </p>
+
+                </div>
+
+
+            </section>
+
+
+            <section class="info-section">
+
+                <h2>
+                    Current Calculation Formulas
+                </h2>
+
+                <p>
+                    Electrical current can be calculated from real power and voltage.
+                    AC calculations also require the load power factor.
+                </p>
+
+
+                <table class="formula-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>System</th>
+                            <th>Current Formula</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+                            <td>DC</td>
+                            <td>I = P ÷ V</td>
+                        </tr>
+
+                        <tr>
+                            <td>Single-Phase AC</td>
+                            <td>I = P ÷ (V × PF)</td>
+                        </tr>
+
+                        <tr>
+                            <td>Three-Phase AC</td>
+                            <td>I = P ÷ (√3 × V<sub>LL</sub> × PF)</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+
+            <section class="info-section">
+
+                <h2>
+                    How to Calculate Amps from Watts
+                </h2>
+
+                <p>
+                    For a DC circuit, divide power in watts by voltage.
+                    For example, a 1,200 W DC load operating at 120 V draws:
+                </p>
+
+                <p>
+                    <strong>
+                        I = 1200 ÷ 120 = 10 A
+                    </strong>
+                </p>
+
+                <p>
+                    AC systems require power factor because voltage and current may
+                    not be in phase. For balanced three-phase systems, the formula
+                    also includes the square root of three.
+                </p>
+
+            </section>
+
+
+            <section class="info-section">
+
+                <h2>
+                    Example Calculations
+                </h2>
+
+                <p>
+                    <strong>Single-phase:</strong>
+                    A 2.4 kW load operating at 240 V with a power factor of 0.80
+                    draws 12.5 A.
+                </p>
+
+                <p>
+                    <strong>Three-phase:</strong>
+                    A 100 kW balanced three-phase load operating at 480 V with a
+                    power factor of 0.90 draws approximately 133.65 A.
+                </p>
+
+            </section>
+
+
+            <section class="info-section">
+
+                <h2>
+                    Related Electrical Calculators
+                </h2>
+
+                <p>
+                    Use these EE Tools calculators for additional electrical power,
+                    voltage, current, and equipment calculations.
+                </p>
+
+
+                <div class="related-tools">
+
+                    <a href="electrical-power.html">
+                        Electrical Power Calculator
+                    </a>
+
+                    <a href="ohms-law.html">
+                        Ohm's Law Calculator
+                    </a>
+
+                    <a href="single-phase-power.html">
+                        Single-Phase Power
+                    </a>
+
+                    <a href="three-phase-power.html">
+                        Three-Phase Power
+                    </a>
+
+                    <a href="motor-full-load-current.html">
+                        Motor Current
+                    </a>
+
+                </div>
+
+            </section>
+
+
+            <section class="info-section">
+
+                <h2>
+                    Engineering Note
+                </h2>
+
+                <p>
+                    This calculator provides current estimates from real power,
+                    voltage, and power factor. AC calculations assume sinusoidal
+                    steady-state quantities, and the three-phase calculation assumes
+                    a balanced system using line-to-line voltage and line current.
+                </p>
+
+                <p>
+                    Calculated operating current should not automatically be treated
+                    as conductor ampacity, protective-device rating, motor nameplate
+                    current, or code-table full-load current. Verify actual design
+                    requirements using applicable standards, equipment data, and
+                    qualified engineering judgment.
+                </p>
+
+            </section>
+
+
+        </div>
+
+
+    </main>
+
+
+    <footer class="footer">
+
+        <div class="container footer-top">
+
+            <div>
+
+                <a href="../index.html" class="logo">
+
+                    <span class="logo-icon">
+                        ⚡
+                    </span>
+
+                    <span>
+                        EE Tools
+                    </span>
+
+                </a>
+
+                <p>
+                    Free electrical engineering calculators and resources.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="container footer-bottom">
+
+            <span>
+                © 2026 EE Tools. All rights reserved.
+            </span>
+
+            <span>
+                Built for electrical engineering.
+            </span>
+
+        </div>
+
+    </footer>
+
+
+    <script>
+
+        const systemType =
+            document.getElementById("systemType");
+
+        const power =
+            document.getElementById("power");
+
+        const powerUnit =
+            document.getElementById("powerUnit");
+
+        const voltage =
+            document.getElementById("voltage");
+
+        const powerFactor =
+            document.getElementById("powerFactor");
+
+        const powerFactorGroup =
+            document.getElementById("powerFactorGroup");
+
+        const voltageDescription =
+            document.getElementById("voltageDescription");
+
+        const calculateButton =
+            document.getElementById("calculateButton");
+
+        const resetButton =
+            document.getElementById("resetButton");
+
+        const errorMessage =
+            document.getElementById("errorMessage");
+
+        const resultBox =
+            document.getElementById("resultBox");
+
+        const powerResult =
+            document.getElementById("powerResult");
+
+        const voltageResult =
+            document.getElementById("voltageResult");
+
+        const pfResult =
+            document.getElementById("pfResult");
+
+        const systemResult =
+            document.getElementById("systemResult");
+
+        const currentResult =
+            document.getElementById("currentResult");
+
+        const formulaDisplay =
+            document.getElementById("formulaDisplay");
+
+        const formulaDescription =
+            document.getElementById("formulaDescription");
+
+
+        function updateSystemInterface() {
+
+            hideError();
+            hideResults();
+
+            if (systemType.value === "dc") {
+
+                powerFactorGroup.hidden = true;
+
+                voltageDescription.textContent =
+                    "Enter the DC system voltage.";
+
+                formulaDisplay.textContent =
+                    "I = P ÷ V";
+
+                formulaDescription.textContent =
+                    "For DC systems, current equals power divided by voltage.";
+
+            }
+
+            else if (systemType.value === "single") {
+
+                powerFactorGroup.hidden = false;
+
+                voltageDescription.textContent =
+                    "Enter the RMS single-phase voltage.";
+
+                formulaDisplay.textContent =
+                    "I = P ÷ (V × PF)";
+
+                formulaDescription.textContent =
+                    "For single-phase AC, current equals real power divided by RMS voltage and power factor.";
+
+            }
+
+            else {
+
+                powerFactorGroup.hidden = false;
+
+                voltageDescription.textContent =
+                    "Enter the line-to-line RMS voltage.";
+
+                formulaDisplay.textContent =
+                    "I = P ÷ (√3 × VLL × PF)";
+
+                formulaDescription.textContent =
+                    "For balanced three-phase AC, current equals real power divided by √3, line-to-line RMS voltage, and power factor.";
+
+            }
+
+        }
+
+
+        function calculateCurrent() {
+
+            hideError();
+            hideResults();
+
+
+            if (power.value.trim() === "" ||
+                voltage.value.trim() === "") {
+
+                showError(
+                    "Please enter both power and voltage."
+                );
+
+                return;
+
+            }
+
+
+            const enteredPower =
+                Number(power.value);
+
+            const v =
+                Number(voltage.value);
+
+
+            if (!Number.isFinite(enteredPower) ||
+                !Number.isFinite(v) ||
+                enteredPower <= 0 ||
+                v <= 0) {
+
+                showError(
+                    "Power and voltage must be numbers greater than zero."
+                );
+
+                return;
+
+            }
+
+
+            let powerWatts =
+                enteredPower;
+
+            if (powerUnit.value === "kw") {
+
+                powerWatts *= 1000;
+
+            }
+
+
+            let amps;
+            let pf = null;
+            let systemName;
+
+
+            if (systemType.value === "dc") {
+
+                amps =
+                    powerWatts / v;
+
+                systemName =
+                    "DC";
+
+            }
+
+            else {
+
+                if (powerFactor.value.trim() === "") {
+
+                    showError(
+                        "Please enter a power factor for the selected AC system."
+                    );
+
+                    return;
+
+                }
+
+
+                pf =
+                    Number(powerFactor.value);
+
+
+                if (!Number.isFinite(pf) ||
+                    pf <= 0 ||
+                    pf > 1) {
+
+                    showError(
+                        "Power factor must be greater than 0 and no greater than 1."
+                    );
+
+                    return;
+
+                }
+
+
+                if (systemType.value === "single") {
+
+                    amps =
+                        powerWatts / (v * pf);
+
+                    systemName =
+                        "Single-Phase AC";
+
+                }
+
+                else {
+
+                    amps =
+                        powerWatts /
+                        (Math.sqrt(3) * v * pf);
+
+                    systemName =
+                        "Three-Phase AC";
+
+                }
+
+            }
+
+
+            powerResult.textContent =
+                formatPower(powerWatts);
+
+            voltageResult.textContent =
+                formatNumber(v) + " V";
+
+            pfResult.textContent =
+                pf === null
+                    ? "N/A"
+                    : formatNumber(pf);
+
+            systemResult.textContent =
+                systemName;
+
+            currentResult.textContent =
+                formatCurrent(amps);
+
+            resultBox.classList.add("show");
+
+        }
+
+
+        function formatPower(value) {
+
+            if (Math.abs(value) >= 1000000) {
+
+                return formatNumber(value / 1000000) +
+                    " MW";
+
+            }
+
+            if (Math.abs(value) >= 1000) {
+
+                return formatNumber(value / 1000) +
+                    " kW";
+
+            }
+
+            return formatNumber(value) +
+                " W";
+
+        }
+
+
+        function formatCurrent(value) {
+
+            if (Math.abs(value) >= 1000000) {
+
+                return formatNumber(value / 1000000) +
+                    " MA";
+
+            }
+
+            if (Math.abs(value) >= 1000) {
+
+                return formatNumber(value / 1000) +
+                    " kA";
+
+            }
+
+            return formatNumber(value) +
+                " A";
+
+        }
+
+
+        function formatNumber(value) {
+
+            if (!Number.isFinite(value)) {
+
+                return "—";
+
+            }
+
+
+            const absoluteValue =
+                Math.abs(value);
+
+
+            if (absoluteValue !== 0 &&
+                (absoluteValue >= 1000000000 ||
+                    absoluteValue < 0.001)) {
+
+                return value.toExponential(3);
+
+            }
+
+
+            return Number(
+                value.toFixed(3)
+            ).toLocaleString(
+                undefined,
+                {
+                    maximumFractionDigits: 3
+                }
+            );
+
+        }
+
+
+        function showError(message) {
+
+            errorMessage.textContent =
+                message;
+
+            errorMessage.classList.add("show");
+
+        }
+
+
+        function hideError() {
+
+            errorMessage.textContent =
+                "";
+
+            errorMessage.classList.remove("show");
+
+        }
+
+
+        function hideResults() {
+
+            resultBox.classList.remove("show");
+
+        }
+
+
+        function resetCalculator() {
+
+            systemType.value =
+                "dc";
+
+            power.value =
+                "";
+
+            powerUnit.value =
+                "kw";
+
+            voltage.value =
+                "";
+
+            powerFactor.value =
+                "";
+
+            powerResult.textContent =
+                "—";
+
+            voltageResult.textContent =
+                "—";
+
+            pfResult.textContent =
+                "—";
+
+            systemResult.textContent =
+                "—";
+
+            currentResult.textContent =
+                "—";
+
+            hideError();
+            hideResults();
+
+            updateSystemInterface();
+
+            power.focus();
+
+        }
+
+
+        systemType.addEventListener(
+            "change",
+            updateSystemInterface
+        );
+
+
+        calculateButton.addEventListener(
+            "click",
+            calculateCurrent
+        );
+
+
+        resetButton.addEventListener(
+            "click",
+            resetCalculator
+        );
+
+
+        [
+            power,
+            voltage,
+            powerFactor
+        ].forEach(
+            function (input) {
+
+                input.addEventListener(
+                    "keydown",
+                    function (event) {
+
+                        if (event.key === "Enter") {
+
+                            calculateCurrent();
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        updateSystemInterface();
+
+    </script>
+
+
+</body>
+
+</html>
